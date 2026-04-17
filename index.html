@@ -1,44 +1,29 @@
 <!DOCTYPE html>
-<!-- saved from url=(0055)file:///Users/stefileustian/Downloads/CoachBooks_2.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1a1a2e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CoachBooks">
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0f0f1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="CoachBooks"/>
 <title>CoachBooks</title>
-<link href="./CoachBooks_files/css2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #0f0f1a;
-  --surface: #1a1a2e;
-  --surface2: #22223a;
-  --surface3: #2a2a45;
-  --accent: #7c6af7;
-  --accent2: #a78bfa;
-  --green: #34d399;
-  --green-bg: rgba(52,211,153,0.1);
-  --red: #f87171;
-  --red-bg: rgba(248,113,113,0.1);
-  --blue: #60a5fa;
-  --blue-bg: rgba(96,165,250,0.1);
-  --amber: #fbbf24;
-  --text: #f1f0ff;
-  --text2: #a09dc0;
-  --text3: #635f80;
-  --border: rgba(124,106,247,0.15);
-  --border2: rgba(124,106,247,0.3);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --font: 'DM Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
+  --bg: #0f0f1a; --surface: #1a1a2e; --surface2: #22223a; --surface3: #2a2a45;
+  --accent: #7c6af7; --accent2: #a78bfa;
+  --green: #34d399; --green-bg: rgba(52,211,153,0.1);
+  --red: #f87171; --red-bg: rgba(248,113,113,0.1);
+  --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.1);
+  --text: #f1f0ff; --text2: #a09dc0; --text3: #635f80;
+  --border: rgba(124,106,247,0.15); --border2: rgba(124,106,247,0.3);
+  --radius: 14px; --radius-sm: 8px;
+  --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); overscroll-behavior: none; }
 body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: -webkit-fill-available; }
-
-/* HEADER */
 .header { padding: 52px 20px 16px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
 .header-logo { display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 34px; height: 34px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
@@ -46,82 +31,60 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .logo-text { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
 .logo-text span { color: var(--accent2); }
 .header-year { font-family: var(--mono); font-size: 12px; color: var(--text3); background: var(--surface2); padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); }
-
-/* METRICS STRIP */
 .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 16px 20px; }
 .metric { background: var(--surface); border-radius: var(--radius); padding: 14px 12px; border: 1px solid var(--border); }
 .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 6px; font-weight: 500; }
-.metric-value { font-family: var(--mono); font-size: 16px; font-weight: 500; color: var(--text); }
+.metric-value { font-family: var(--mono); font-size: 16px; font-weight: 500; }
 .metric-value.pos { color: var(--green); }
 .metric-value.neg { color: var(--red); }
 .metric-sub { font-size: 10px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
-
-/* CONTENT */
 .content { flex: 1; overflow-y: auto; padding: 0 20px 100px; -webkit-overflow-scrolling: touch; }
-
-/* NAV */
 .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
 .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px 8px; border: none; background: transparent; color: var(--text3); font-family: var(--font); font-size: 10px; cursor: pointer; transition: color 0.15s; }
 .nav-btn svg { width: 20px; height: 20px; }
 .nav-btn.active { color: var(--accent2); }
 .nav-btn.active .nav-dot { background: var(--accent2); }
 .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; margin-top: 1px; }
-
-/* SECTIONS */
 .section { display: none; padding-top: 8px; }
 .section.active { display: block; }
-
-/* CARDS */
+.section-header { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; padding-top: 4px; }
+.section-sub { font-size: 13px; color: var(--text3); margin-bottom: 18px; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; }
 .card-title { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--text2); text-transform: uppercase; margin-bottom: 16px; }
-
-/* FORMS */
 .field { margin-bottom: 14px; }
 .field label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
-.field input, .field select, .field textarea {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
-  color: var(--text); font-family: var(--font); font-size: 15px; padding: 11px 13px;
-  -webkit-appearance: none; appearance: none; outline: none; transition: border-color 0.15s;
-}
+.field input, .field select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font); font-size: 15px; padding: 11px 13px; -webkit-appearance: none; appearance: none; outline: none; transition: border-color 0.15s; }
 .field input:focus, .field select:focus { border-color: var(--accent); }
 .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23635f80' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 .field input[type="date"] { color-scheme: dark; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
-.btn { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: none; font-family: var(--font); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; letter-spacing: 0.01em; }
+.btn { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: none; font-family: var(--font); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
 .btn-accent { background: var(--accent); color: white; }
-.btn-accent:hover { background: #6b59e0; }
 .btn-accent:active { transform: scale(0.98); }
-.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
-.btn-ghost:hover { border-color: var(--border2); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* UPLOAD ZONE */
+.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); margin-top: 10px; }
 .upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface); }
 .upload-zone:hover, .upload-zone.dragover { background: rgba(124,106,247,0.08); border-color: var(--accent); }
 .upload-icon-wrap { width: 52px; height: 52px; background: rgba(124,106,247,0.12); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
 .upload-icon-wrap svg { width: 26px; height: 26px; stroke: var(--accent2); fill: none; stroke-width: 1.5; }
 .upload-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
 .upload-sub { font-size: 13px; color: var(--text3); line-height: 1.5; }
-
-/* SCAN STATES */
-.scan-preview { border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; max-height: 220px; display: flex; align-items: center; justify-content: center; background: var(--surface2); }
+.storage-note { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text3); margin-top: 12px; line-height: 1.5; }
+.storage-note svg { width: 14px; height: 14px; stroke: var(--text3); fill: none; stroke-width: 1.5; flex-shrink: 0; }
+.scan-preview { border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; background: var(--surface2); }
 .scan-preview img { width: 100%; height: 220px; object-fit: cover; display: block; }
 .scan-loading { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 14px; }
 .scan-spinner { width: 18px; height: 18px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .scan-loading-text { font-size: 13px; color: var(--text2); }
-.scan-result { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px; }
+.scan-result-box { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px; }
 .scan-result-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 8px; }
 .scan-result-item { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
 .scan-result-item span:first-child { color: var(--text3); }
 .scan-result-item span:last-child { color: var(--text); font-weight: 500; }
-
-/* LEDGER */
 .ledger-filters { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
 .filter-chip { padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--text2); font-family: var(--font); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
 .filter-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
-.entry { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface); border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid var(--border); }
+.entry { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid var(--border); }
 .entry-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .entry-icon svg { width: 16px; height: 16px; }
 .entry-icon.income { background: var(--green-bg); }
@@ -130,6 +93,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .entry-icon.expense svg { stroke: var(--red); fill: none; stroke-width: 2; }
 .entry-icon.mileage { background: var(--blue-bg); }
 .entry-icon.mileage svg { stroke: var(--blue); fill: none; stroke-width: 2; }
+.entry-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; cursor: pointer; border: 1px solid var(--border2); }
 .entry-body { flex: 1; min-width: 0; }
 .entry-cat { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .entry-meta { font-size: 11px; color: var(--text3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -143,523 +107,394 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .del-btn:hover { color: var(--red); background: var(--red-bg); }
 .del-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
-.empty-state-icon { font-size: 32px; margin-bottom: 10px; }
-
-/* SUMMARY */
 .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .summary-row:last-child { border-bottom: none; }
 .summary-row-label { color: var(--text2); }
 .summary-row-val { font-family: var(--mono); font-weight: 500; color: var(--text); }
-
-/* SECTION HEADER */
-.section-header { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; padding-top: 4px; }
-.section-sub { font-size: 13px; color: var(--text3); margin-bottom: 18px; }
-
-/* EXPORT */
-.export-row { display: flex; gap: 10px; margin-top: 6px; }
-.export-row .btn { flex: 1; font-size: 13px; padding: 12px; }
-
-/* TOAST */
-.toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-10px); background: var(--surface3); border: 1px solid var(--border2); border-radius: 99px; padding: 10px 20px; font-size: 13px; color: var(--text); z-index: 999; opacity: 0; transition: all 0.25s; white-space: nowrap; }
+.export-row { display: flex; gap: 10px; }
+.export-row .btn { flex: 1; font-size: 13px; padding: 12px; margin-top: 0; }
+.toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-10px); background: var(--surface3); border: 1px solid var(--border2); border-radius: 99px; padding: 10px 20px; font-size: 13px; color: var(--text); z-index: 9999; opacity: 0; transition: all 0.25s; white-space: nowrap; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { border-color: rgba(52,211,153,0.4); color: var(--green); }
-
-/* INSTALL BANNER */
 .install-banner { background: rgba(124,106,247,0.1); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px; }
 .install-banner svg { width: 20px; height: 20px; stroke: var(--accent2); fill: none; stroke-width: 1.5; flex-shrink: 0; margin-top: 1px; }
 .install-banner-text { flex: 1; }
 .install-banner-title { font-size: 13px; font-weight: 600; color: var(--accent2); margin-bottom: 3px; }
 .install-banner-sub { font-size: 12px; color: var(--text3); line-height: 1.5; }
-.install-banner-close { background: none; border: none; color: var(--text3); cursor: pointer; padding: 2px; font-size: 16px; flex-shrink: 0; }
+.install-banner-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; flex-shrink: 0; line-height: 1; padding: 0; }
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9998; align-items: center; justify-content: center; padding: 24px; flex-direction: column; gap: 16px; }
+.modal.open { display: flex; }
+.modal img { max-width: 100%; max-height: 65vh; border-radius: var(--radius); object-fit: contain; }
+.modal-info { text-align: center; }
+.modal-info-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.modal-info-sub { font-size: 13px; color: var(--text3); }
+.modal-close { padding: 10px 32px; border-radius: 99px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); font-family: var(--font); font-size: 14px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"></path></svg>
-    </div>
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
     <div class="logo-text">Coach<span>Books</span></div>
   </div>
-  <div class="header-year" id="year-badge">2026</div>
+  <div class="header-year" id="year-badge">2025</div>
 </div>
 
-<div class="metrics" id="metrics-strip">
-  <div class="metric">
-    <div class="metric-label">Revenue</div>
-    <div class="metric-value pos" id="m-rev">$0</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Expenses</div>
-    <div class="metric-value" id="m-exp">$0</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Net</div>
-    <div class="metric-value pos" id="m-net">$0</div>
-    <div class="metric-sub" id="m-miles-sub"></div>
-  </div>
+<div class="metrics">
+  <div class="metric"><div class="metric-label">Revenue</div><div class="metric-value pos" id="m-rev">$0</div></div>
+  <div class="metric"><div class="metric-label">Expenses</div><div class="metric-value" id="m-exp">$0</div></div>
+  <div class="metric"><div class="metric-label">Net</div><div class="metric-value" id="m-net">$0</div><div class="metric-sub" id="m-miles-sub"></div></div>
 </div>
 
 <div class="content">
 
-  <!-- LOG SECTION -->
+  <!-- LOG -->
   <div class="section active" id="sec-log">
     <div id="install-banner" class="install-banner">
-      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       <div class="install-banner-text">
         <div class="install-banner-title">Add to your home screen</div>
-        <div class="install-banner-sub">Tap the share icon in your browser → "Add to Home Screen" to use this as an app.</div>
+        <div class="install-banner-sub">Safari → Share icon → "Add to Home Screen"</div>
       </div>
-      <button class="install-banner-close" onclick="document.getElementById(&#39;install-banner&#39;).style.display=&#39;none&#39;">×</button>
+      <button class="install-banner-close" onclick="document.getElementById('install-banner').style.display='none'">×</button>
     </div>
-
     <div class="section-header">Log entry</div>
     <div class="section-sub">Record income, expenses, or mileage</div>
-
-    <!-- INCOME CARD -->
     <div class="card">
       <div class="card-title">Income</div>
       <div class="field-row">
-        <div class="field"><label>Date</label><input type="date" id="inc-date"></div>
-        <div class="field"><label>Amount ($)</label><input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="field"><label>Date</label><input type="date" id="inc-date"/></div>
+        <div class="field"><label>Amount ($)</label><input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01"/></div>
       </div>
-      <div class="field"><label>Type</label>
-        <select id="inc-type">
-          <option>Private lesson</option><option>Group lesson</option><option>Clinic</option>
-          <option>Tournament</option><option>Other income</option>
-        </select>
-      </div>
-      <div class="field"><label>Client / Notes</label><input type="text" id="inc-note" placeholder="e.g. John Smith – 1hr private"></div>
+      <div class="field"><label>Type</label><select id="inc-type"><option>Private lesson</option><option>Group lesson</option><option>Clinic</option><option>Tournament</option><option>Other income</option></select></div>
+      <div class="field"><label>Client / Notes</label><input type="text" id="inc-note" placeholder="e.g. John Smith – 1hr private"/></div>
       <button class="btn btn-accent" onclick="addIncome()">Add income</button>
     </div>
-
-    <!-- EXPENSE CARD -->
     <div class="card">
       <div class="card-title">Expense</div>
       <div class="field-row">
-        <div class="field"><label>Date</label><input type="date" id="exp-date"></div>
-        <div class="field"><label>Amount ($)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="field"><label>Date</label><input type="date" id="exp-date"/></div>
+        <div class="field"><label>Amount ($)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"/></div>
       </div>
-      <div class="field"><label>Category</label>
-        <select id="exp-cat">
-          <option>Court fees</option><option>Equipment / balls</option><option>Racket / strings</option>
-          <option>Coaching certification</option><option>Software / apps</option>
-          <option>Phone / communication</option><option>Marketing</option><option>Insurance</option>
-          <option>Professional development</option><option>Meals (business)</option><option>Other expense</option>
-        </select>
-      </div>
-      <div class="field"><label>Description</label><input type="text" id="exp-note" placeholder="e.g. Court rental – Palisades TC"></div>
+      <div class="field"><label>Category</label><select id="exp-cat"><option>Court fees</option><option>Equipment / balls</option><option>Racket / strings</option><option>Coaching certification</option><option>Software / apps</option><option>Phone / communication</option><option>Marketing</option><option>Insurance</option><option>Professional development</option><option>Meals (business)</option><option>Other expense</option></select></div>
+      <div class="field"><label>Description</label><input type="text" id="exp-note" placeholder="e.g. Court rental – Palisades TC"/></div>
       <button class="btn btn-accent" onclick="addExpense()">Add expense</button>
     </div>
-
-    <!-- MILEAGE CARD -->
     <div class="card">
       <div class="card-title">Mileage</div>
       <div class="field-row">
-        <div class="field"><label>Date</label><input type="date" id="mil-date"></div>
-        <div class="field"><label>Miles</label><input type="number" id="mil-miles" placeholder="0.0" min="0" step="0.1"></div>
+        <div class="field"><label>Date</label><input type="date" id="mil-date"/></div>
+        <div class="field"><label>Miles</label><input type="number" id="mil-miles" placeholder="0.0" min="0" step="0.1"/></div>
       </div>
-      <div class="field"><label>Purpose</label>
-        <select id="mil-purpose">
-          <option>Drive to lesson</option><option>Drive to court</option>
-          <option>Equipment run</option><option>Client meeting</option><option>Other</option>
-        </select>
-      </div>
-      <div class="field"><label>Notes</label><input type="text" id="mil-note" placeholder="e.g. Santa Monica → UCLA Tennis"></div>
+      <div class="field"><label>Purpose</label><select id="mil-purpose"><option>Drive to lesson</option><option>Drive to court</option><option>Equipment run</option><option>Client meeting</option><option>Other</option></select></div>
+      <div class="field"><label>Notes</label><input type="text" id="mil-note" placeholder="e.g. Santa Monica → UCLA Tennis"/></div>
       <button class="btn btn-accent" onclick="addMileage()">Add mileage</button>
     </div>
   </div>
 
-  <!-- SCAN SECTION -->
+  <!-- SCAN -->
   <div class="section" id="sec-scan">
     <div class="section-header">Scan receipt</div>
-    <div class="section-sub">AI reads your receipt and fills in the details</div>
-
+    <div class="section-sub">AI reads your receipt and saves a compressed photo</div>
     <div id="scan-upload-state">
-      <div class="upload-zone" id="upload-zone" onclick="document.getElementById(&#39;file-input&#39;).click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <div class="upload-icon-wrap">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12h8M12 8v8"></path></svg>
-        </div>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <div class="upload-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M12 8v8"/></svg></div>
         <div class="upload-title">Tap to upload receipt</div>
-        <div class="upload-sub">Take a photo or choose from your camera roll.<br>JPG, PNG, HEIC supported.</div>
+        <div class="upload-sub">Take a photo or choose from your camera roll</div>
       </div>
-      <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event)">
+      <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event)"/>
+      <div class="storage-note">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Each receipt photo is compressed to ~50KB — a full year of receipts uses under 10MB of storage on your phone
+      </div>
     </div>
-
     <div id="scan-active-state" style="display:none">
-      <div class="scan-preview"><img id="scan-img" alt="Receipt"></div>
-      <div id="scan-loading-el" class="scan-loading" style="display:none">
-        <div class="scan-spinner"></div>
-        <div class="scan-loading-text">Reading receipt with AI...</div>
-      </div>
+      <div class="scan-preview"><img id="scan-img" alt="Receipt"/></div>
+      <div id="scan-loading-el" class="scan-loading" style="display:none"><div class="scan-spinner"></div><div class="scan-loading-text">Reading receipt with AI...</div></div>
       <div id="scan-result-el" style="display:none"></div>
       <div id="scan-form-el" style="display:none">
         <div class="card" style="margin-top:0">
           <div class="card-title">Confirm expense</div>
           <div class="field-row">
-            <div class="field"><label>Date</label><input type="date" id="r-date"></div>
-            <div class="field"><label>Amount ($)</label><input type="number" id="r-amount" placeholder="0.00" min="0" step="0.01"></div>
+            <div class="field"><label>Date</label><input type="date" id="r-date"/></div>
+            <div class="field"><label>Amount ($)</label><input type="number" id="r-amount" placeholder="0.00" min="0" step="0.01"/></div>
           </div>
-          <div class="field"><label>Category</label>
-            <select id="r-cat">
-              <option>Court fees</option><option>Equipment / balls</option><option>Racket / strings</option>
-              <option>Coaching certification</option><option>Software / apps</option>
-              <option>Phone / communication</option><option>Marketing</option><option>Insurance</option>
-              <option>Professional development</option><option>Meals (business)</option><option>Other expense</option>
-            </select>
-          </div>
-          <div class="field"><label>Description</label><input type="text" id="r-note" placeholder="Vendor and description"></div>
-          <button class="btn btn-accent" onclick="confirmScan()" style="margin-bottom:10px">Add to ledger</button>
-          <button class="btn btn-ghost" onclick="resetScan()">Scan another receipt</button>
+          <div class="field"><label>Category</label><select id="r-cat"><option>Court fees</option><option>Equipment / balls</option><option>Racket / strings</option><option>Coaching certification</option><option>Software / apps</option><option>Phone / communication</option><option>Marketing</option><option>Insurance</option><option>Professional development</option><option>Meals (business)</option><option>Other expense</option></select></div>
+          <div class="field"><label>Description</label><input type="text" id="r-note" placeholder="Vendor and description"/></div>
+          <button class="btn btn-accent" onclick="confirmScan()">Save expense + receipt photo</button>
+          <button class="btn btn-ghost" onclick="resetScan()">Scan another</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- LEDGER SECTION -->
+  <!-- LEDGER -->
   <div class="section" id="sec-ledger">
     <div class="section-header">Ledger</div>
-    <div class="section-sub">All your entries, newest first</div>
+    <div class="section-sub">Tap a receipt thumbnail to view the full image</div>
     <div class="ledger-filters">
-      <button class="filter-chip active" onclick="setFilter(&#39;all&#39;,this)">All</button>
-      <button class="filter-chip" onclick="setFilter(&#39;income&#39;,this)">Income</button>
-      <button class="filter-chip" onclick="setFilter(&#39;expense&#39;,this)">Expenses</button>
-      <button class="filter-chip" onclick="setFilter(&#39;mileage&#39;,this)">Mileage</button>
+      <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="setFilter('income',this)">Income</button>
+      <button class="filter-chip" onclick="setFilter('expense',this)">Expenses</button>
+      <button class="filter-chip" onclick="setFilter('mileage',this)">Mileage</button>
     </div>
     <div id="ledger-list"></div>
   </div>
 
-  <!-- SUMMARY SECTION -->
+  <!-- SUMMARY -->
   <div class="section" id="sec-summary">
     <div class="section-header">Summary</div>
     <div class="section-sub">Year-to-date tax overview</div>
-
-    <div class="card">
-      <div class="card-title">Income breakdown</div>
-      <div id="income-bkdn"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Expense breakdown</div>
-      <div id="expense-bkdn"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Mileage deduction</div>
-      <div id="mileage-bkdn"></div>
-    </div>
+    <div class="card"><div class="card-title">Income breakdown</div><div id="income-bkdn"></div></div>
+    <div class="card"><div class="card-title">Expense breakdown</div><div id="expense-bkdn"></div></div>
+    <div class="card"><div class="card-title">Mileage deduction</div><div id="mileage-bkdn"></div></div>
     <div class="card">
       <div class="card-title">Export for taxes</div>
-      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Export a CSV file you can hand directly to your accountant or import into TurboTax / QuickBooks.</p>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Download a CSV to give your accountant or import into TurboTax.</p>
       <div class="export-row">
         <button class="btn btn-accent" onclick="exportCSV()">Download CSV</button>
-        <button class="btn btn-ghost" onclick="clearAll()">Clear all data</button>
+        <button class="btn btn-ghost" style="margin-top:0" onclick="clearAll()">Clear all</button>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- NAV -->
 <nav class="nav">
-  <button class="nav-btn active" onclick="showSection(&#39;log&#39;,this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
-    Log
-    <div class="nav-dot"></div>
+  <button class="nav-btn active" onclick="showSection('log',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Log<div class="nav-dot"></div>
   </button>
-  <button class="nav-btn" onclick="showSection(&#39;scan&#39;,this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg>
-    Scan
-    <div class="nav-dot"></div>
+  <button class="nav-btn" onclick="showSection('scan',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Scan<div class="nav-dot"></div>
   </button>
-  <button class="nav-btn" onclick="showSection(&#39;ledger&#39;,this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-    Ledger
-    <div class="nav-dot"></div>
+  <button class="nav-btn" onclick="showSection('ledger',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    Ledger<div class="nav-dot"></div>
   </button>
-  <button class="nav-btn" onclick="showSection(&#39;summary&#39;,this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
-    Summary
-    <div class="nav-dot"></div>
+  <button class="nav-btn" onclick="showSection('summary',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+    Summary<div class="nav-dot"></div>
   </button>
 </nav>
+
+<div class="modal" id="receipt-modal" onclick="closeModal()">
+  <img id="modal-img" src="" alt="Receipt"/>
+  <div class="modal-info">
+    <div class="modal-info-title" id="modal-title"></div>
+    <div class="modal-info-sub" id="modal-sub"></div>
+  </div>
+  <button class="modal-close">Close</button>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 const IRS_RATE = 0.67;
-const STORAGE_KEY = 'coachbooks_entries_v1';
+const STORAGE_KEY = 'coachbooks_v2';
 let entries = [];
 let ledgerFilter = 'all';
+let pendingReceipt = null;
 
-function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) entries = JSON.parse(raw);
-  } catch(e) { entries = []; }
-}
-function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) {}
-}
+function loadData() { try { const r=localStorage.getItem(STORAGE_KEY); if(r) entries=JSON.parse(r); } catch(e) { entries=[]; } }
+function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) { showToast('Storage full — export and clear old data'); } }
 function today() { return new Date().toISOString().split('T')[0]; }
-
 function initDates() {
-  ['inc-date','exp-date','mil-date','r-date'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = today();
-  });
+  ['inc-date','exp-date','mil-date','r-date'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=today(); });
   document.getElementById('year-badge').textContent = new Date().getFullYear();
 }
-
 function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' '+type : '');
-  setTimeout(() => t.className = 'toast', 2200);
+  const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',2400);
+}
+function showSection(name, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active'); btn.classList.add('active');
+  if(name==='ledger') renderLedger();
+  if(name==='summary') renderSummary();
 }
 
-function showSection(name, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-'+name).classList.add('active');
-  btn.classList.add('active');
-  if (name === 'ledger') renderLedger();
-  if (name === 'summary') renderSummary();
+function compressImage(dataUrl, callback) {
+  const img = new Image();
+  img.onload = function() {
+    const MAX = 800;
+    let w=img.width, h=img.height;
+    if(w>h){ if(w>MAX){h=Math.round(h*MAX/w);w=MAX;} } else { if(h>MAX){w=Math.round(w*MAX/h);h=MAX;} }
+    const c=document.createElement('canvas'); c.width=w; c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    callback(c.toDataURL('image/jpeg',0.6));
+  };
+  img.src=dataUrl;
 }
 
 function addIncome() {
-  const amount = parseFloat(document.getElementById('inc-amount').value);
-  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
-  entries.push({ id: Date.now(), type: 'income', date: document.getElementById('inc-date').value, amount, category: document.getElementById('inc-type').value, note: document.getElementById('inc-note').value });
-  saveData(); refresh();
-  document.getElementById('inc-amount').value = '';
-  document.getElementById('inc-note').value = '';
-  showToast('Income added', 'success');
+  const a=parseFloat(document.getElementById('inc-amount').value);
+  if(!a||a<=0){showToast('Enter a valid amount');return;}
+  entries.push({id:Date.now(),type:'income',date:document.getElementById('inc-date').value,amount:a,category:document.getElementById('inc-type').value,note:document.getElementById('inc-note').value});
+  saveData();refresh();
+  document.getElementById('inc-amount').value=''; document.getElementById('inc-note').value='';
+  showToast('Income added','success');
 }
-
 function addExpense() {
-  const amount = parseFloat(document.getElementById('exp-amount').value);
-  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
-  entries.push({ id: Date.now(), type: 'expense', date: document.getElementById('exp-date').value, amount, category: document.getElementById('exp-cat').value, note: document.getElementById('exp-note').value });
-  saveData(); refresh();
-  document.getElementById('exp-amount').value = '';
-  document.getElementById('exp-note').value = '';
-  showToast('Expense added', 'success');
+  const a=parseFloat(document.getElementById('exp-amount').value);
+  if(!a||a<=0){showToast('Enter a valid amount');return;}
+  entries.push({id:Date.now(),type:'expense',date:document.getElementById('exp-date').value,amount:a,category:document.getElementById('exp-cat').value,note:document.getElementById('exp-note').value});
+  saveData();refresh();
+  document.getElementById('exp-amount').value=''; document.getElementById('exp-note').value='';
+  showToast('Expense added','success');
 }
-
 function addMileage() {
-  const miles = parseFloat(document.getElementById('mil-miles').value);
-  if (!miles || miles <= 0) { showToast('Enter valid miles'); return; }
-  entries.push({ id: Date.now(), type: 'mileage', date: document.getElementById('mil-date').value, miles, category: document.getElementById('mil-purpose').value, note: document.getElementById('mil-note').value });
-  saveData(); refresh();
-  document.getElementById('mil-miles').value = '';
-  document.getElementById('mil-note').value = '';
-  showToast('Mileage logged', 'success');
+  const m=parseFloat(document.getElementById('mil-miles').value);
+  if(!m||m<=0){showToast('Enter valid miles');return;}
+  entries.push({id:Date.now(),type:'mileage',date:document.getElementById('mil-date').value,miles:m,category:document.getElementById('mil-purpose').value,note:document.getElementById('mil-note').value});
+  saveData();refresh();
+  document.getElementById('mil-miles').value=''; document.getElementById('mil-note').value='';
+  showToast('Mileage logged','success');
 }
-
-function deleteEntry(id) {
-  entries = entries.filter(e => e.id !== id);
-  saveData(); refresh(); renderLedger();
-  showToast('Entry deleted');
-}
+function deleteEntry(id) { entries=entries.filter(e=>e.id!==id); saveData();refresh();renderLedger(); showToast('Deleted'); }
 
 function refresh() {
-  const rev = entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
-  const exp = entries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
-  const miles = entries.filter(e=>e.type==='mileage').reduce((s,e)=>s+e.miles,0);
-  const net = rev - exp;
-  document.getElementById('m-rev').textContent = '$'+rev.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-  document.getElementById('m-exp').textContent = '$'+exp.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-  const mnet = document.getElementById('m-net');
-  mnet.textContent = (net<0?'-':'')+'$'+Math.abs(net).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-  mnet.className = 'metric-value '+(net>=0?'pos':'neg');
-  document.getElementById('m-miles-sub').textContent = miles > 0 ? miles.toFixed(0)+' mi' : '';
+  const rev=entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+  const exp=entries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  const miles=entries.filter(e=>e.type==='mileage').reduce((s,e)=>s+e.miles,0);
+  const net=rev-exp;
+  document.getElementById('m-rev').textContent='$'+rev.toLocaleString('en-US',{maximumFractionDigits:0});
+  document.getElementById('m-exp').textContent='$'+exp.toLocaleString('en-US',{maximumFractionDigits:0});
+  const mn=document.getElementById('m-net');
+  mn.textContent=(net<0?'-':'')+'$'+Math.abs(net).toLocaleString('en-US',{maximumFractionDigits:0});
+  mn.className='metric-value '+(net>=0?'pos':'neg');
+  document.getElementById('m-miles-sub').textContent=miles>0?miles.toFixed(0)+' mi':'';
 }
 
-function fmtDate(d) {
-  if (!d) return '';
-  const [y,m,day] = d.split('-');
-  return `${m}/${day}/${y.slice(2)}`;
-}
+function fmtDate(d){ if(!d)return''; const[y,m,day]=d.split('-'); return`${m}/${day}/${y.slice(2)}`; }
+function setFilter(f,btn){ ledgerFilter=f; document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderLedger(); }
 
-function setFilter(f, btn) {
-  ledgerFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-  btn.classList.add('active');
-  renderLedger();
-}
-
-const icons = {
-  income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>`,
-  expense: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg>`,
-  mileage: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`
+const icons={
+  income:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
+  expense:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`,
+  mileage:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`
 };
 
 function renderLedger() {
-  const list = document.getElementById('ledger-list');
-  let filtered = ledgerFilter === 'all' ? entries : entries.filter(e=>e.type===ledgerFilter);
-  filtered = [...filtered].sort((a,b)=>b.date.localeCompare(a.date));
-  if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div>No entries yet</div>';
-    return;
-  }
-  list.innerHTML = filtered.map(e => {
-    const amt = e.type==='mileage' ? e.miles.toFixed(1)+' mi' : '$'+e.amount.toFixed(2);
-    const desc = [e.category, e.note].filter(Boolean).join(' · ');
-    return `<div class="entry">
-      <div class="entry-icon ${e.type}">${icons[e.type]}</div>
-      <div class="entry-body">
-        <div class="entry-cat">${e.category}</div>
-        <div class="entry-meta">${e.note || '—'}</div>
-      </div>
-      <div class="entry-right">
-        <div class="entry-amount ${e.type}">${e.type==='expense'?'-':''}${amt}</div>
-        <div class="entry-date">${fmtDate(e.date)}</div>
-      </div>
-      <button class="del-btn" onclick="deleteEntry(${e.id})"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>`;
+  const list=document.getElementById('ledger-list');
+  let f=ledgerFilter==='all'?entries:entries.filter(e=>e.type===ledgerFilter);
+  f=[...f].sort((a,b)=>b.date.localeCompare(a.date));
+  if(f.length===0){list.innerHTML='<div class="empty-state">No entries yet</div>';return;}
+  list.innerHTML=f.map(e=>{
+    const amt=e.type==='mileage'?e.miles.toFixed(1)+' mi':(e.type==='expense'?'-':'')+'$'+e.amount.toFixed(2);
+    const left=e.receiptImg
+      ?`<img class="entry-thumb" src="${e.receiptImg}" alt="Receipt" onclick="viewReceipt(${e.id})">`
+      :`<div class="entry-icon ${e.type}">${icons[e.type]}</div>`;
+    return`<div class="entry">${left}<div class="entry-body"><div class="entry-cat">${e.category}</div><div class="entry-meta">${e.note||'—'}</div></div><div class="entry-right"><div class="entry-amount ${e.type}">${amt}</div><div class="entry-date">${fmtDate(e.date)}</div></div><button class="del-btn" onclick="deleteEntry(${e.id})"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`;
   }).join('');
 }
 
-function renderSummary() {
-  const rev = entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
-  const exp = entries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
-  const miles = entries.filter(e=>e.type==='mileage').reduce((s,e)=>s+e.miles,0);
-  const ded = miles * IRS_RATE;
+function viewReceipt(id) {
+  const e=entries.find(x=>x.id===id); if(!e||!e.receiptImg)return;
+  document.getElementById('modal-img').src=e.receiptImg;
+  document.getElementById('modal-title').textContent=e.category;
+  document.getElementById('modal-sub').textContent=[fmtDate(e.date),e.amount?'$'+e.amount.toFixed(2):'',e.note].filter(Boolean).join(' · ');
+  document.getElementById('receipt-modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('receipt-modal').classList.remove('open'); }
 
-  const ig={}, eg={};
+function renderSummary() {
+  const rev=entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+  const exp=entries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  const miles=entries.filter(e=>e.type==='mileage').reduce((s,e)=>s+e.miles,0);
+  const ded=miles*IRS_RATE;
+  const ig={},eg={};
   entries.filter(e=>e.type==='income').forEach(e=>{ig[e.category]=(ig[e.category]||0)+e.amount});
   entries.filter(e=>e.type==='expense').forEach(e=>{eg[e.category]=(eg[e.category]||0)+e.amount});
-
-  document.getElementById('income-bkdn').innerHTML = Object.keys(ig).length===0
-    ? '<div style="font-size:13px;color:var(--text3)">No income logged yet</div>'
-    : Object.entries(ig).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--green)">$${v.toFixed(2)}</span></div>`).join('');
-
-  document.getElementById('expense-bkdn').innerHTML = Object.keys(eg).length===0
-    ? '<div style="font-size:13px;color:var(--text3)">No expenses logged yet</div>'
-    : Object.entries(eg).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--red)">$${v.toFixed(2)}</span></div>`).join('');
-
-  document.getElementById('mileage-bkdn').innerHTML = miles===0
-    ? '<div style="font-size:13px;color:var(--text3)">No mileage logged yet</div>'
-    : `<div class="summary-row"><span class="summary-row-label">Total miles</span><span class="summary-row-val">${miles.toFixed(1)} mi</span></div>
-       <div class="summary-row"><span class="summary-row-label">IRS rate (2025)</span><span class="summary-row-val">$${IRS_RATE}/mi</span></div>
-       <div class="summary-row"><span class="summary-row-label">Est. deduction</span><span class="summary-row-val" style="color:var(--green)">$${ded.toFixed(2)}</span></div>`;
+  document.getElementById('income-bkdn').innerHTML=Object.keys(ig).length===0?'<div style="font-size:13px;color:var(--text3)">No income logged yet</div>':Object.entries(ig).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--green)">$${v.toFixed(2)}</span></div>`).join('');
+  document.getElementById('expense-bkdn').innerHTML=Object.keys(eg).length===0?'<div style="font-size:13px;color:var(--text3)">No expenses logged yet</div>':Object.entries(eg).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--red)">$${v.toFixed(2)}</span></div>`).join('');
+  document.getElementById('mileage-bkdn').innerHTML=miles===0?'<div style="font-size:13px;color:var(--text3)">No mileage logged yet</div>':`<div class="summary-row"><span class="summary-row-label">Total miles</span><span class="summary-row-val">${miles.toFixed(1)} mi</span></div><div class="summary-row"><span class="summary-row-label">IRS rate (2025)</span><span class="summary-row-val">$${IRS_RATE}/mi</span></div><div class="summary-row"><span class="summary-row-label">Est. deduction</span><span class="summary-row-val" style="color:var(--green)">$${ded.toFixed(2)}</span></div>`;
 }
 
 function exportCSV() {
-  if (entries.length===0) { showToast('No entries to export'); return; }
-  const rows=[['Date','Type','Category','Notes','Amount ($)','Miles']];
-  [...entries].sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
-    rows.push([e.date,e.type,e.category||'',e.note||'',e.amount?e.amount.toFixed(2):'',e.miles?e.miles.toFixed(1):'']);
-  });
+  if(entries.length===0){showToast('No entries to export');return;}
+  const rows=[['Date','Type','Category','Notes','Amount ($)','Miles','Has Receipt Photo']];
+  [...entries].sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{rows.push([e.date,e.type,e.category||'',e.note||'',e.amount?e.amount.toFixed(2):'',e.miles?e.miles.toFixed(1):'',e.receiptImg?'Yes':'No']);});
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download=`CoachBooks_${new Date().getFullYear()}.csv`; a.click();
-  showToast('CSV downloaded', 'success');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`CoachBooks_${new Date().getFullYear()}.csv`; a.click();
+  showToast('CSV downloaded','success');
 }
-
 function clearAll() {
-  if (!confirm('Clear ALL entries? This cannot be undone.')) return;
-  entries = [];
-  saveData(); refresh(); renderLedger(); renderSummary();
+  if(!confirm('Clear ALL entries and receipt photos? This cannot be undone.'))return;
+  entries=[]; saveData(); refresh(); renderLedger(); renderSummary();
   showToast('All data cleared');
 }
 
-// RECEIPT SCANNER
-function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
-function handleDragLeave() { document.getElementById('upload-zone').classList.remove('dragover'); }
-function handleDrop(e) { e.preventDefault(); handleDragLeave(); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) processFile(f); }
-function handleFileSelect(e) { const f=e.target.files[0]; if(f) processFile(f); }
+function handleDragOver(e){e.preventDefault();document.getElementById('upload-zone').classList.add('dragover');}
+function handleDragLeave(){document.getElementById('upload-zone').classList.remove('dragover');}
+function handleDrop(e){e.preventDefault();handleDragLeave();const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))processFile(f);}
+function handleFileSelect(e){const f=e.target.files[0];if(f)processFile(f);}
 
 function processFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('scan-img').src = e.target.result;
-    document.getElementById('scan-upload-state').style.display = 'none';
-    document.getElementById('scan-active-state').style.display = 'block';
-    document.getElementById('scan-loading-el').style.display = 'flex';
-    document.getElementById('scan-result-el').style.display = 'none';
-    document.getElementById('scan-form-el').style.display = 'none';
-    scanWithAI(e.target.result, file.type);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    compressImage(e.target.result, compressed=>{
+      pendingReceipt=compressed;
+      document.getElementById('scan-img').src=compressed;
+      document.getElementById('scan-upload-state').style.display='none';
+      document.getElementById('scan-active-state').style.display='block';
+      document.getElementById('scan-loading-el').style.display='flex';
+      document.getElementById('scan-result-el').style.display='none';
+      document.getElementById('scan-form-el').style.display='none';
+      scanWithAI(compressed);
+    });
   };
   reader.readAsDataURL(file);
 }
 
-async function scanWithAI(dataUrl, mimeType) {
-  const base64 = dataUrl.split(',')[1];
-  const mime = mimeType || 'image/jpeg';
-  const prompt = `You are a bookkeeper assistant for a self-employed tennis coach. Analyze this receipt image and extract information. Respond ONLY with a valid JSON object, no markdown or explanation:
-{"date":"YYYY-MM-DD or null","amount":number or null,"vendor":"store name","description":"brief description","suggested_category":"one of: Court fees|Equipment / balls|Racket / strings|Coaching certification|Software / apps|Phone / communication|Marketing|Insurance|Professional development|Meals (business)|Other expense","confidence":"high|medium|low"}`;
-
+async function scanWithAI(dataUrl) {
+  const base64=dataUrl.split(',')[1];
+  const prompt=`You are a bookkeeper for a self-employed tennis coach. Analyze this receipt. Respond ONLY with valid JSON, no markdown:\n{"date":"YYYY-MM-DD or null","amount":number or null,"vendor":"store name","description":"brief description","suggested_category":"one of: Court fees|Equipment / balls|Racket / strings|Coaching certification|Software / apps|Phone / communication|Marketing|Insurance|Professional development|Meals (business)|Other expense"}`;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 500,
-        messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: mime, data: base64 } },
-          { type: 'text', text: prompt }
-        ]}]
-      })
-    });
-    const data = await res.json();
-    const text = data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
-    const p = JSON.parse(text);
-    document.getElementById('scan-loading-el').style.display = 'none';
-
-    const resEl = document.getElementById('scan-result-el');
-    resEl.innerHTML = `<div class="scan-result">
-      <div class="scan-result-label">Receipt scanned</div>
-      <div class="scan-result-item"><span>Vendor</span><span>${p.vendor||'Unknown'}</span></div>
-      <div class="scan-result-item"><span>Amount</span><span>${p.amount!=null?'$'+parseFloat(p.amount).toFixed(2):'Not found'}</span></div>
-      <div class="scan-result-item"><span>Date</span><span>${p.date||'Not found'}</span></div>
-      <div class="scan-result-item"><span>Category</span><span>${p.suggested_category}</span></div>
-    </div>`;
-    resEl.style.display = 'block';
-
-    if (p.date) document.getElementById('r-date').value = p.date;
-    else document.getElementById('r-date').value = today();
-    if (p.amount != null) document.getElementById('r-amount').value = parseFloat(p.amount).toFixed(2);
-    document.getElementById('r-note').value = [p.vendor, p.description].filter(Boolean).join(' — ');
-    const cats = ['Court fees','Equipment / balls','Racket / strings','Coaching certification','Software / apps','Phone / communication','Marketing','Insurance','Professional development','Meals (business)','Other expense'];
-    const sel = document.getElementById('r-cat');
-    sel.innerHTML = cats.map(c=>`<option${c===p.suggested_category?' selected':''}>${c}</option>`).join('');
-    document.getElementById('scan-form-el').style.display = 'block';
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
+    const data=await res.json();
+    const p=JSON.parse(data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    document.getElementById('scan-loading-el').style.display='none';
+    const resEl=document.getElementById('scan-result-el');
+    resEl.innerHTML=`<div class="scan-result-box"><div class="scan-result-label">Receipt read</div><div class="scan-result-item"><span>Vendor</span><span>${p.vendor||'Unknown'}</span></div><div class="scan-result-item"><span>Amount</span><span>${p.amount!=null?'$'+parseFloat(p.amount).toFixed(2):'Not found'}</span></div><div class="scan-result-item"><span>Date</span><span>${p.date||'Not found'}</span></div><div class="scan-result-item"><span>Category</span><span>${p.suggested_category}</span></div></div>`;
+    resEl.style.display='block';
+    if(p.date) document.getElementById('r-date').value=p.date; else document.getElementById('r-date').value=today();
+    if(p.amount!=null) document.getElementById('r-amount').value=parseFloat(p.amount).toFixed(2);
+    document.getElementById('r-note').value=[p.vendor,p.description].filter(Boolean).join(' — ');
+    const cats=['Court fees','Equipment / balls','Racket / strings','Coaching certification','Software / apps','Phone / communication','Marketing','Insurance','Professional development','Meals (business)','Other expense'];
+    document.getElementById('r-cat').innerHTML=cats.map(c=>`<option${c===p.suggested_category?' selected':''}>${c}</option>`).join('');
+    document.getElementById('scan-form-el').style.display='block';
   } catch(err) {
-    document.getElementById('scan-loading-el').style.display = 'none';
-    const resEl = document.getElementById('scan-result-el');
-    resEl.innerHTML = `<div style="color:var(--red);font-size:13px;padding:10px;background:var(--red-bg);border-radius:8px;margin-bottom:14px">Could not read receipt automatically. Fill in the details below.</div>`;
-    resEl.style.display = 'block';
-    document.getElementById('r-date').value = today();
-    document.getElementById('scan-form-el').style.display = 'block';
+    document.getElementById('scan-loading-el').style.display='none';
+    const resEl=document.getElementById('scan-result-el');
+    resEl.innerHTML=`<div style="color:var(--red);font-size:13px;padding:10px;background:var(--red-bg);border-radius:8px;margin-bottom:14px">Couldn't read receipt automatically — fill in details below.</div>`;
+    resEl.style.display='block';
+    document.getElementById('r-date').value=today();
+    document.getElementById('scan-form-el').style.display='block';
   }
 }
 
 function confirmScan() {
-  const amount = parseFloat(document.getElementById('r-amount').value);
-  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
-  entries.push({ id: Date.now(), type: 'expense', date: document.getElementById('r-date').value, amount, category: document.getElementById('r-cat').value, note: document.getElementById('r-note').value });
-  saveData(); refresh();
-  resetScan();
-  showToast('Expense added from receipt', 'success');
+  const a=parseFloat(document.getElementById('r-amount').value);
+  if(!a||a<=0){showToast('Enter a valid amount');return;}
+  entries.push({id:Date.now(),type:'expense',date:document.getElementById('r-date').value,amount:a,category:document.getElementById('r-cat').value,note:document.getElementById('r-note').value,receiptImg:pendingReceipt});
+  saveData();refresh();pendingReceipt=null;resetScan();
+  showToast('Expense + receipt photo saved','success');
 }
 
 function resetScan() {
-  document.getElementById('file-input').value = '';
-  document.getElementById('scan-upload-state').style.display = 'block';
-  document.getElementById('scan-active-state').style.display = 'none';
-  document.getElementById('r-amount').value = '';
-  document.getElementById('r-note').value = '';
-  document.getElementById('r-date').value = today();
+  document.getElementById('file-input').value='';
+  document.getElementById('scan-upload-state').style.display='block';
+  document.getElementById('scan-active-state').style.display='none';
+  document.getElementById('r-amount').value=''; document.getElementById('r-note').value='';
+  document.getElementById('r-date').value=today(); pendingReceipt=null;
 }
 
-// INIT
-loadData();
-initDates();
-refresh();
+loadData(); initDates(); refresh();
 </script>
-
-
-</body></html>
+</body>
+</html>
