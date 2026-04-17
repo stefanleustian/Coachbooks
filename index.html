@@ -138,7 +138,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
     <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
     <div class="logo-text">Coach<span>Books</span></div>
   </div>
-  <div class="header-year" id="year-badge">2025</div>
+  <div class="header-year" id="sync-badge">2026</div>
 </div>
 
 <div class="metrics">
@@ -326,12 +326,95 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 <script>
 const IRS_RATE = 0.67;
 const STORAGE_KEY = 'coachbooks_v2';
+const SUPA_URL = 'https://xdqsvdpasdpzckkznzcb.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkcXN2ZHBhc2RwemNra3puemNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTIyMDgsImV4cCI6MjA5MTk2ODIwOH0.T5S1GSOUU4weGJkEaEznV6ujKC0yepfg858X1eA4cAk';
 let entries = [];
 let ledgerFilter = 'all';
 let pendingReceipt = null;
+let syncStatus = 'idle'; // idle, syncing, synced, error
 
 function loadData() { try { const r=localStorage.getItem(STORAGE_KEY); if(r) entries=JSON.parse(r); } catch(e) { entries=[]; } }
-function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) { showToast('Storage full — export and clear old data'); } }
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) {}
+  syncToCloud();
+}
+
+async function syncToCloud() {
+  if (syncStatus === 'syncing') return;
+  syncStatus = 'syncing';
+  updateSyncBadge();
+  try {
+    // Delete all existing rows then re-insert (simple full sync)
+    await supaFetch('DELETE', '/rest/v1/entries?id=neq.0');
+    if (entries.length > 0) {
+      const rows = entries.map(e => ({
+        id: String(e.id),
+        type: e.type,
+        date: e.date,
+        amount: e.amount || null,
+        miles: e.miles || null,
+        category: e.category || '',
+        note: e.note || '',
+        receipt_img: e.receiptImg || null
+      }));
+      await supaFetch('POST', '/rest/v1/entries', rows);
+    }
+    syncStatus = 'synced';
+  } catch(err) {
+    syncStatus = 'error';
+    console.error('Sync error:', err);
+  }
+  updateSyncBadge();
+}
+
+async function loadFromCloud() {
+  try {
+    const data = await supaFetch('GET', '/rest/v1/entries?select=*&order=date.desc');
+    if (data && data.length > 0) {
+      entries = data.map(r => ({
+        id: parseInt(r.id),
+        type: r.type,
+        date: r.date,
+        amount: r.amount,
+        miles: r.miles,
+        category: r.category,
+        note: r.note,
+        receiptImg: r.receipt_img
+      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      refresh();
+      showToast('Data loaded from cloud', 'success');
+    }
+  } catch(err) {
+    console.error('Load error:', err);
+    showToast('Could not reach cloud — using local data');
+  }
+}
+
+async function supaFetch(method, path, body) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=minimal' : ''
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(SUPA_URL + path, opts);
+  if (method === 'GET') return res.json();
+  return res;
+}
+
+function updateSyncBadge() {
+  const badge = document.getElementById('sync-badge');
+  if (!badge) return;
+  if (syncStatus === 'syncing') { badge.textContent = 'syncing...'; badge.style.color = 'var(--text3)'; }
+  else if (syncStatus === 'synced') { badge.textContent = 'synced'; badge.style.color = 'var(--green)'; }
+  else if (syncStatus === 'error') { badge.textContent = 'sync error'; badge.style.color = 'var(--red)'; }
+  else { badge.textContent = new Date().getFullYear(); badge.style.color = 'var(--text3)'; }
+}
 function today() { return new Date().toISOString().split('T')[0]; }
 function initDates() {
   ['inc-date','exp-date','mil-date','r-date'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=today(); });
@@ -618,7 +701,7 @@ function cancelImport() {
   document.getElementById('csv-input').value = '';
 }
 
-loadData(); initDates(); refresh();
+loadData(); initDates(); refresh(); loadFromCloud();
 </script>
 </body>
 </html>
