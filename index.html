@@ -243,6 +243,50 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   </div>
 
 
+  <!-- INVOICE -->
+  <div class="section" id="sec-invoice">
+    <div class="section-header">Invoice</div>
+    <div class="section-sub">Create and send a client invoice</div>
+
+    <div class="card">
+      <div class="card-title">Your details</div>
+      <div class="field"><label>Your name</label><input type="text" id="inv-your-name" placeholder="e.g. Stefan Leustian"/></div>
+      <div class="field"><label>Your email</label><input type="text" id="inv-your-email" placeholder="e.g. stefan@email.com"/></div>
+      <div class="field"><label>Your phone</label><input type="text" id="inv-your-phone" placeholder="e.g. (310) 555-0123"/></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Client details</div>
+      <div class="field"><label>Client name</label><input type="text" id="inv-client-name" placeholder="e.g. John Smith"/></div>
+      <div class="field"><label>Client email (optional)</label><input type="text" id="inv-client-email" placeholder="e.g. john@email.com"/></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Lesson details</div>
+      <div class="field-row">
+        <div class="field"><label>Date</label><input type="date" id="inv-date"/></div>
+        <div class="field"><label>Invoice #</label><input type="text" id="inv-number" placeholder="e.g. 001"/></div>
+      </div>
+      <div class="field"><label>Description</label><input type="text" id="inv-desc" placeholder="e.g. Tennis coaching – 1hr private lesson"/></div>
+      <div class="field-row">
+        <div class="field"><label>Hours</label><input type="number" id="inv-hours" placeholder="1" min="0" step="0.5"/></div>
+        <div class="field"><label>Rate ($/hr)</label><input type="number" id="inv-rate" placeholder="150" min="0" step="5"/></div>
+      </div>
+      <div class="field"><label>Notes (optional)</label><input type="text" id="inv-notes" placeholder="e.g. Payment due within 7 days"/></div>
+    </div>
+
+    <div class="card" id="inv-total-card" style="display:none">
+      <div class="card-title">Invoice total</div>
+      <div class="summary-row"><span class="summary-row-label" id="inv-total-desc"></span><span class="summary-row-val" style="color:var(--green)" id="inv-total-amount"></span></div>
+    </div>
+
+    <button class="btn btn-accent" onclick="generateInvoice()" style="margin-bottom:10px">Generate invoice</button>
+    <div id="inv-preview" style="display:none">
+      <button class="btn btn-ghost" style="margin-bottom:10px;margin-top:0" onclick="printInvoice()">Print / Save as PDF</button>
+      <button class="btn btn-ghost" style="margin-top:0" onclick="logInvoiceAsIncome()">Also log as income</button>
+    </div>
+  </div>
+
   <!-- IMPORT -->
   <div class="section" id="sec-import">
     <div class="section-header">Import from Sheets</div>
@@ -305,6 +349,10 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   <button class="nav-btn" onclick="showSection('summary',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
     Summary<div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" onclick="showSection('invoice',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+    Invoice<div class="nav-dot"></div>
   </button>
   <button class="nav-btn" onclick="showSection('import',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -382,10 +430,10 @@ async function loadFromCloud() {
         receiptImg: r.receipt_img
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-refresh();
-renderLedger();
-renderSummary();
-showToast('Data loaded from cloud', 'success');
+      refresh();
+      renderLedger();
+      renderSummary();
+      showToast('Data loaded from cloud', 'success');
     }
   } catch(err) {
     console.error('Load error:', err);
@@ -419,7 +467,7 @@ function updateSyncBadge() {
 }
 function today() { return new Date().toISOString().split('T')[0]; }
 function initDates() {
-  ['inc-date','exp-date','mil-date','r-date'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=today(); });
+  ['inc-date','exp-date','mil-date','r-date','inv-date'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=today(); });
   document.getElementById('sync-badge').textContent = new Date().getFullYear();
 }
 function showToast(msg, type='') {
@@ -703,6 +751,101 @@ function cancelImport() {
   pendingImport = [];
   document.getElementById('import-preview').style.display = 'none';
   document.getElementById('csv-input').value = '';
+}
+
+
+// INVOICE
+let invoiceData = null;
+
+function generateInvoice() {
+  const yourName = document.getElementById('inv-your-name').value.trim();
+  const yourEmail = document.getElementById('inv-your-email').value.trim();
+  const yourPhone = document.getElementById('inv-your-phone').value.trim();
+  const clientName = document.getElementById('inv-client-name').value.trim();
+  const desc = document.getElementById('inv-desc').value.trim();
+  const hours = parseFloat(document.getElementById('inv-hours').value) || 1;
+  const rate = parseFloat(document.getElementById('inv-rate').value);
+  const invDate = document.getElementById('inv-date').value;
+  const invNum = document.getElementById('inv-number').value.trim() || '001';
+  const notes = document.getElementById('inv-notes').value.trim();
+
+  if (!yourName) { showToast('Enter your name'); return; }
+  if (!clientName) { showToast('Enter client name'); return; }
+  if (!rate || rate <= 0) { showToast('Enter your rate'); return; }
+
+  const total = hours * rate;
+  invoiceData = { yourName, yourEmail, yourPhone, clientName, desc, hours, rate, total, invDate, invNum, notes,
+    clientEmail: document.getElementById('inv-client-email').value.trim() };
+
+  document.getElementById('inv-total-card').style.display = 'block';
+  document.getElementById('inv-total-desc').textContent = `${hours} hr${hours !== 1 ? 's' : ''} × $${rate}/hr`;
+  document.getElementById('inv-total-amount').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('inv-preview').style.display = 'block';
+  showToast('Invoice ready!', 'success');
+}
+
+function printInvoice() {
+  if (!invoiceData) return;
+  const d = invoiceData;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Invoice ${d.invNum}</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; color: #1a1a2e; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+    .brand { font-size: 24px; font-weight: 700; color: #7c6af7; }
+    .invoice-meta { text-align: right; font-size: 14px; color: #635f80; }
+    .invoice-meta strong { color: #1a1a2e; font-size: 18px; display: block; margin-bottom: 4px; }
+    .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .party-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #635f80; margin-bottom: 6px; }
+    .party-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .party-detail { font-size: 13px; color: #635f80; line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #635f80; padding: 8px 0; border-bottom: 2px solid #e8e6ff; }
+    td { padding: 16px 0; border-bottom: 1px solid #f0eeff; font-size: 14px; }
+    .total-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .total-box { background: #f0eeff; border-radius: 10px; padding: 16px 24px; min-width: 200px; }
+    .total-label { font-size: 12px; color: #635f80; margin-bottom: 4px; }
+    .total-amount { font-size: 28px; font-weight: 700; color: #7c6af7; }
+    .notes { margin-top: 40px; padding: 16px; background: #f9f8ff; border-radius: 10px; font-size: 13px; color: #635f80; }
+    @media print { body { margin: 0; } }
+  </style></head><body>
+  <div class="header">
+    <div class="brand">CoachBooks</div>
+    <div class="invoice-meta"><strong>Invoice #${d.invNum}</strong>Date: ${d.invDate ? fmtDate(d.invDate) : today()}</div>
+  </div>
+  <div class="parties">
+    <div><div class="party-label">From</div><div class="party-name">${d.yourName}</div><div class="party-detail">${d.yourEmail}<br>${d.yourPhone}</div></div>
+    <div><div class="party-label">Bill to</div><div class="party-name">${d.clientName}</div><div class="party-detail">${d.clientEmail||''}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Description</th><th>Hours</th><th>Rate</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody><tr>
+      <td>${d.desc || 'Tennis coaching'}</td>
+      <td>${d.hours}</td>
+      <td>$${d.rate.toFixed(2)}/hr</td>
+      <td style="text-align:right;font-weight:600">$${d.total.toFixed(2)}</td>
+    </tr></tbody>
+  </table>
+  <div class="total-row"><div class="total-box"><div class="total-label">Total due</div><div class="total-amount">$${d.total.toFixed(2)}</div></div></div>
+  ${d.notes ? `<div class="notes">${d.notes}</div>` : ''}
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function logInvoiceAsIncome() {
+  if (!invoiceData) return;
+  entries.push({
+    id: Date.now(), type: 'income',
+    date: invoiceData.invDate || today(),
+    amount: invoiceData.total,
+    category: 'Private lesson',
+    note: `${invoiceData.clientName} – Invoice #${invoiceData.invNum}`
+  });
+  saveData(); refresh();
+  showToast('Logged as income!', 'success');
+  document.getElementById('inv-preview').style.display = 'none';
+  invoiceData = null;
 }
 
 loadData(); initDates(); refresh(); loadFromCloud();
