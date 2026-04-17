@@ -684,13 +684,15 @@ function showImportPreview(skipped) {
 
 function confirmImport() {
   if (pendingImport.length === 0) return;
-  entries = [...entries, ...pendingImport];
-  saveData(); refresh();
+  // Always replace everything with the imported data — no duplicates
+  entries = [...pendingImport];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  refresh();
   const count = pendingImport.length;
   pendingImport = [];
   document.getElementById('import-preview').style.display = 'none';
   showToast(count + ' entries imported!', 'success');
-  // Switch to ledger to show the result
+  syncToCloud();
   const ledgerBtn = document.querySelectorAll('.nav-btn')[3];
   showSection('ledger', ledgerBtn);
 }
