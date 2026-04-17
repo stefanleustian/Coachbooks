@@ -242,6 +242,34 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
     <div id="ledger-list"></div>
   </div>
 
+
+  <!-- IMPORT -->
+  <div class="section" id="sec-import">
+    <div class="section-header">Import from Sheets</div>
+    <div class="section-sub">Upload your existing log as a CSV file</div>
+    <div class="card">
+      <div class="card-title">How to export from Google Sheets</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8">1. Open your Google Sheet<br>2. Click <strong style="color:var(--text)">File</strong> &rarr; <strong style="color:var(--text)">Download</strong> &rarr; <strong style="color:var(--text)">Comma Separated Values (.csv)</strong><br>3. Come back here and upload that file below</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Upload your CSV</div>
+      <div class="upload-zone" id="import-zone" onclick="document.getElementById('csv-input').click()">
+        <div class="upload-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></div>
+        <div class="upload-title">Tap to upload CSV</div>
+        <div class="upload-sub">Your Google Sheets export</div>
+      </div>
+      <input type="file" id="csv-input" accept=".csv,text/csv" style="display:none" onchange="handleCSVImport(event)"/>
+      <div class="storage-note" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Your existing entries won't be deleted — imported rows are added on top</div>
+    </div>
+    <div id="import-preview" style="display:none">
+      <div class="card">
+        <div class="card-title">Preview</div>
+        <div id="import-preview-content"></div>
+        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-accent" onclick="confirmImport()">Import all entries</button><button class="btn btn-ghost" style="margin-top:0" onclick="cancelImport()">Cancel</button></div>
+      </div>
+    </div>
+  </div>
+
   <!-- SUMMARY -->
   <div class="section" id="sec-summary">
     <div class="section-header">Summary</div>
@@ -277,6 +305,10 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   <button class="nav-btn" onclick="showSection('summary',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
     Summary<div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" onclick="showSection('import',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    Import<div class="nav-dot"></div>
   </button>
 </nav>
 
@@ -492,6 +524,98 @@ function resetScan() {
   document.getElementById('scan-active-state').style.display='none';
   document.getElementById('r-amount').value=''; document.getElementById('r-note').value='';
   document.getElementById('r-date').value=today(); pendingReceipt=null;
+}
+
+
+let pendingImport = [];
+
+function parseDate(raw) {
+  if (!raw || !raw.trim()) return null;
+  raw = raw.trim();
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  // M/D/YYYY or M/D/YY
+  const full = raw.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+  if (full) {
+    let y = full[3] ? parseInt(full[3]) : 2026;
+    if (y < 100) y += 2000;
+    const m = String(parseInt(full[1])).padStart(2,'0');
+    const d = String(parseInt(full[2])).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+  return null;
+}
+
+function handleCSVImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const text = ev.target.result;
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    pendingImport = [];
+    let skipped = 0;
+    // Skip header row (row 1 = Date, Location, Mileage, Revenue, Odometer)
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g,'').trim());
+      const dateRaw = cols[0];
+      const location = cols[1] || '';
+      const mileage = parseFloat(cols[2]);
+      const revenue = parseFloat(cols[3]);
+      const date = parseDate(dateRaw);
+      if (!date) { skipped++; continue; }
+      if (revenue > 0) {
+        pendingImport.push({ id: Date.now() + pendingImport.length, type:'income', date, amount: revenue, category:'Private lesson', note: location });
+      }
+      if (mileage > 0) {
+        pendingImport.push({ id: Date.now() + pendingImport.length + 10000, type:'mileage', date, miles: mileage, category:'Drive to lesson', note: location });
+      }
+    }
+    showImportPreview(skipped);
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function showImportPreview(skipped) {
+  if (pendingImport.length === 0) {
+    showToast('No valid rows found in CSV');
+    return;
+  }
+  const incomeRows = pendingImport.filter(e=>e.type==='income');
+  const mileageRows = pendingImport.filter(e=>e.type==='mileage');
+  const totalRev = incomeRows.reduce((s,e)=>s+e.amount,0);
+  const totalMiles = mileageRows.reduce((s,e)=>s+e.miles,0);
+
+  const preview = document.getElementById('import-preview');
+  const content = document.getElementById('import-preview-content');
+  content.innerHTML = `
+    <div class="summary-row"><span class="summary-row-label">Income entries</span><span class="summary-row-val" style="color:var(--green)">${incomeRows.length} rows · $${totalRev.toLocaleString('en-US',{maximumFractionDigits:0})}</span></div>
+    <div class="summary-row"><span class="summary-row-label">Mileage entries</span><span class="summary-row-val" style="color:var(--blue)">${mileageRows.length} rows · ${totalMiles.toFixed(0)} mi</span></div>
+    <div class="summary-row"><span class="summary-row-label">Total entries to add</span><span class="summary-row-val">${pendingImport.length}</span></div>
+    ${skipped > 0 ? `<div class="summary-row"><span class="summary-row-label" style="color:var(--text3)">Rows skipped (no date)</span><span class="summary-row-val" style="color:var(--text3)">${skipped}</span></div>` : ''}
+    <p style="font-size:12px;color:var(--text3);margin-top:12px;line-height:1.6">Income is imported as "Private lesson" — you can edit individual entries in the Ledger after importing.</p>
+  `;
+  preview.style.display = 'block';
+}
+
+function confirmImport() {
+  if (pendingImport.length === 0) return;
+  entries = [...entries, ...pendingImport];
+  saveData(); refresh();
+  const count = pendingImport.length;
+  pendingImport = [];
+  document.getElementById('import-preview').style.display = 'none';
+  showToast(count + ' entries imported!', 'success');
+  // Switch to ledger to show the result
+  const ledgerBtn = document.querySelectorAll('.nav-btn')[3];
+  showSection('ledger', ledgerBtn);
+}
+
+function cancelImport() {
+  pendingImport = [];
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('csv-input').value = '';
 }
 
 loadData(); initDates(); refresh();
