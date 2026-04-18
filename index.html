@@ -179,6 +179,14 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .theme-swatch { width: 32px; height: 32px; border-radius: 8px; }
 .theme-label { font-size: 10px; font-weight: 500; color: var(--text2); text-align: center; }
 
+.success-modal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; pointer-events: none; }
+.success-modal.show { display: flex; }
+.success-popup { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 28px 32px; text-align: center; transform: scale(0.8); opacity: 0; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; }
+.success-modal.show .success-popup { transform: scale(1); opacity: 1; }
+.success-icon { width: 52px; height: 52px; background: var(--green-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.success-icon svg { width: 24px; height: 24px; stroke: var(--green); fill: none; stroke-width: 2.5; }
+.success-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.success-sub { font-size: 13px; color: var(--text3); }
 .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-10px); background: var(--surface3); border: 1px solid var(--border2); border-radius: 99px; padding: 10px 20px; font-size: 13px; color: var(--text); z-index: 9999; opacity: 0; transition: all 0.25s; white-space: nowrap; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { border-color: rgba(52,211,153,0.4); color: var(--green); }
@@ -592,6 +600,13 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="success-modal" id="success-modal">
+  <div class="success-popup">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <div class="success-title" id="success-title">Saved!</div>
+    <div class="success-sub" id="success-sub"></div>
+  </div>
+</div>
 
 <script>
 const IRS_RATE = 0.67;
@@ -628,6 +643,13 @@ function showToast(msg, type='') {
   const t=document.getElementById('toast'); t.textContent=msg;
   t.className='toast show'+(type?' '+type:'');
   setTimeout(()=>t.className='toast',2400);
+}
+function showSuccess(title, sub='') {
+  const modal=document.getElementById('success-modal');
+  document.getElementById('success-title').textContent=title;
+  document.getElementById('success-sub').textContent=sub;
+  modal.classList.add('show');
+  setTimeout(()=>modal.classList.remove('show'), 1400);
 }
 function haptic(style='medium') {
   if(navigator.vibrate) {
@@ -722,7 +744,7 @@ function addIncome() {
   entries.push({id:Date.now(),type:'income',date:document.getElementById('inc-date').value,amount:a,category:document.getElementById('inc-type').value,note:document.getElementById('inc-note').value});
   saveData();refresh();
   document.getElementById('inc-amount').value=''; document.getElementById('inc-note').value='';
-  haptic('success'); showToast('Income added','success');
+  haptic('success'); showSuccess('Income saved!', document.getElementById('inc-type').value); showToast('Income added','success');
 }
 function addExpense() {
   const a=parseFloat(document.getElementById('exp-amount').value);
@@ -730,7 +752,7 @@ function addExpense() {
   entries.push({id:Date.now(),type:'expense',date:document.getElementById('exp-date').value,amount:a,category:document.getElementById('exp-cat').value,note:document.getElementById('exp-note').value});
   saveData();refresh();
   document.getElementById('exp-amount').value=''; document.getElementById('exp-note').value='';
-  haptic('success'); showToast('Expense added','success');
+  haptic('success'); showSuccess('Expense saved!', document.getElementById('exp-cat').value); showToast('Expense added','success');
 }
 function addVehicleExpense() {
   const a=parseFloat(document.getElementById('veh-amount').value);
@@ -738,7 +760,7 @@ function addVehicleExpense() {
   entries.push({id:Date.now(),type:'vehicle',date:document.getElementById('veh-date').value,amount:a,category:document.getElementById('veh-cat').value,note:document.getElementById('veh-note').value});
   saveData();refresh();
   document.getElementById('veh-amount').value=''; document.getElementById('veh-note').value='';
-  haptic('success'); showToast('Vehicle expense added','success');
+  haptic('success'); showSuccess('Vehicle expense saved!', document.getElementById('veh-cat').value); showToast('Vehicle expense added','success');
 }
 function addMileage() {
   const m=parseFloat(document.getElementById('mil-miles').value);
@@ -746,7 +768,7 @@ function addMileage() {
   entries.push({id:Date.now(),type:'mileage',date:document.getElementById('mil-date').value,miles:m,category:document.getElementById('mil-purpose').value,note:document.getElementById('mil-note').value});
   saveData();refresh();
   document.getElementById('mil-miles').value=''; document.getElementById('mil-note').value='';
-  haptic('success'); showToast('Mileage logged','success');
+  haptic('success'); showSuccess('Mileage logged!', document.getElementById('mil-miles').value + ' miles'); showToast('Mileage logged','success');
 }
 
 // ── DELETE ──
@@ -1006,7 +1028,7 @@ function confirmScan(){
   const type=window._scanIsVehicle?'vehicle':'expense';
   entries.push({id:Date.now(),type,date:document.getElementById('r-date').value,amount:a,category:document.getElementById('r-cat').value,note:document.getElementById('r-note').value,receiptImg:pendingReceipt});
   saveData();refresh();pendingReceipt=null;window._scanIsVehicle=false;resetScan();
-  haptic('success'); showToast((type==='vehicle'?'Vehicle':'Business')+' expense + receipt saved','success');
+  haptic('success'); showSuccess('Receipt saved!', document.getElementById('r-cat').value); showToast((type==='vehicle'?'Vehicle':'Business')+' expense + receipt saved','success');
 }
 function resetScan(){
   document.getElementById('file-input').value='';
@@ -1180,7 +1202,7 @@ function saveDailySummary(){
   if(!amount||amount<=0){showToast('Enter today\'s revenue');return;}
   entries.push({id:Date.now(),type:'income',date,amount,category:'Private lesson',note:note||(selectedDailyRoute?selectedDailyRoute.name:'')});
   if(selectedDailyRoute){entries.push({id:Date.now()+1,type:'mileage',date,miles:selectedDailyRoute.miles,category:'Drive to lesson',note:selectedDailyRoute.name});}
-  saveData();refresh();closeDailyModal();haptic('success'); showToast('Day logged!','success');
+  saveData();refresh();closeDailyModal();haptic('success'); showSuccess('Day logged!', 'Income + mileage saved'); showToast('Day logged!','success');
 }
 
 // ── INIT ──
