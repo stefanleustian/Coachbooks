@@ -399,10 +399,43 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   <div class="section" id="sec-summary">
     <div class="section-header">Summary</div>
     <div class="section-sub">Year-to-date tax overview</div>
-    <div class="card"><div class="card-title">Income breakdown</div><div id="income-bkdn"></div></div>
-    <div class="card"><div class="card-title">Business expense breakdown</div><div id="expense-bkdn"></div></div>
-    <div class="card"><div class="card-title">Vehicle deduction — which is better?</div><div id="vehicle-bkdn"></div></div>
-    <div class="card"><div class="card-title">Mileage log</div><div id="mileage-bkdn"></div></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleCashFlow()">
+        <div class="card-title" style="margin-bottom:0">Cash flow</div>
+        <svg id="cashflow-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div id="cashflow-content" style="display:none;margin-top:16px"></div>
+    </div>
+    <div class="card" id="quarterly-tax-card">
+      <div class="card-title">Quarterly estimated tax</div>
+      <div id="quarterly-tax-content"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Vehicle deduction — which is better?</div>
+      <div id="vehicle-bkdn"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleCard('income-bkdn','chevron-income')">
+        <div class="card-title" style="margin-bottom:0">Income breakdown</div>
+        <svg id="chevron-income" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div id="income-bkdn" style="display:none;margin-top:16px"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleCard('expense-bkdn','chevron-expense')">
+        <div class="card-title" style="margin-bottom:0">Business expenses</div>
+        <svg id="chevron-expense" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div id="expense-bkdn" style="display:none;margin-top:16px"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleCard('mileage-bkdn','chevron-mileage')">
+        <div class="card-title" style="margin-bottom:0">Mileage log</div>
+        <svg id="chevron-mileage" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div id="mileage-bkdn" style="display:none;margin-top:16px"></div>
+    </div>
     <div class="card">
       <div class="card-title">Export for taxes</div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Download a CSV to give your accountant or import into TurboTax.</p>
@@ -688,6 +721,7 @@ function renderSummary() {
   entries.filter(e=>e.type==='expense').forEach(e=>{eg[e.category]=(eg[e.category]||0)+e.amount});
   entries.filter(e=>e.type==='vehicle').forEach(e=>{vg[e.category]=(vg[e.category]||0)+e.amount});
 
+  renderQuarterlyTax();
   document.getElementById('income-bkdn').innerHTML=Object.keys(ig).length===0?'<div style="font-size:13px;color:var(--text3)">No income logged yet</div>':Object.entries(ig).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--green)">$${v.toFixed(2)}</span></div>`).join('');
   document.getElementById('expense-bkdn').innerHTML=Object.keys(eg).length===0?'<div style="font-size:13px;color:var(--text3)">No expenses logged yet</div>':Object.entries(eg).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--red)">$${v.toFixed(2)}</span></div>`).join('');
   document.getElementById('mileage-bkdn').innerHTML=miles===0?'<div style="font-size:13px;color:var(--text3)">No mileage logged yet</div>':`<div class="summary-row"><span class="summary-row-label">Total miles</span><span class="summary-row-val">${miles.toFixed(1)} mi</span></div><div class="summary-row"><span class="summary-row-label">IRS rate (2025)</span><span class="summary-row-val">$${IRS_RATE}/mi</span></div><div class="summary-row"><span class="summary-row-label">Est. deduction</span><span class="summary-row-val" style="color:var(--green)">$${ded.toFixed(2)}</span></div>`;
@@ -1070,6 +1104,197 @@ function addRoute() {
 function deleteRoute(i) {
   savedRoutes.splice(i, 1);
   saveRoutes(); renderRoutes();
+}
+
+
+// QUARTERLY TAX
+const TAX_RATE = 0.30;
+const QUARTERS = [
+  { name: 'Q1', start: '01-01', end: '03-31', due: '04-15', label: 'Jan 1 – Mar 31' },
+  { name: 'Q2', start: '04-01', end: '05-31', due: '06-16', label: 'Apr 1 – May 31' },
+  { name: 'Q3', start: '06-01', end: '08-31', due: '09-15', label: 'Jun 1 – Aug 31' },
+  { name: 'Q4', start: '09-01', end: '12-31', due: '01-15', label: 'Sep 1 – Dec 31' }
+];
+
+function getQuarterDates(q, year) {
+  const nextYear = q.name === 'Q4' ? year + 1 : year;
+  return {
+    start: `${year}-${q.start}`,
+    end: `${year}-${q.end}`,
+    due: `${nextYear}-${q.due}`
+  };
+}
+
+function renderQuarterlyTax() {
+  const el = document.getElementById('quarterly-tax-content');
+  if (!el) return;
+  const now = new Date();
+  const year = now.getFullYear();
+  const todayStr = now.toISOString().split('T')[0];
+
+  // Find current quarter
+  let currentQ = QUARTERS[3];
+  let currentDates = getQuarterDates(QUARTERS[3], year);
+  for (const q of QUARTERS) {
+    const dates = getQuarterDates(q, year);
+    if (todayStr >= dates.start && todayStr <= dates.end) {
+      currentQ = q;
+      currentDates = dates;
+      break;
+    }
+  }
+
+  // Calculate net profit for current quarter
+  const qIncome = entries.filter(e => e.type==='income' && e.date >= currentDates.start && e.date <= currentDates.end).reduce((s,e)=>s+e.amount,0);
+  const qExpense = entries.filter(e => (e.type==='expense'||e.type==='vehicle') && e.date >= currentDates.start && e.date <= currentDates.end).reduce((s,e)=>s+e.amount,0);
+  const qNet = Math.max(0, qIncome - qExpense);
+  const qTax = qNet * TAX_RATE;
+
+  // YTD totals
+  const ytdIncome = entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+  const ytdExpense = entries.filter(e=>(e.type==='expense'||e.type==='vehicle')).reduce((s,e)=>s+e.amount,0);
+  const ytdNet = Math.max(0, ytdIncome - ytdExpense);
+  const ytdTax = ytdNet * TAX_RATE;
+
+  // Days until due
+  const dueDate = new Date(currentDates.due);
+  const daysUntil = Math.ceil((dueDate - now) / (1000*60*60*24));
+  const isUrgent = daysUntil <= 14;
+  const isPast = daysUntil < 0;
+
+  // Due date badge color
+  const badgeColor = isPast ? '#f87171' : isUrgent ? '#fbbf24' : '#34d399';
+  const badgeBg = isPast ? 'rgba(248,113,113,0.12)' : isUrgent ? 'rgba(251,191,36,0.12)' : 'rgba(52,211,153,0.12)';
+  const dueDateFmt = dueDate.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  const daysLabel = isPast ? 'overdue' : daysUntil === 0 ? 'due today' : `${daysUntil} days away`;
+
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div>
+        <div style="font-size:18px;font-weight:600;color:var(--text)">${currentQ.name} — ${currentQ.label}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px">Due ${dueDateFmt}</div>
+      </div>
+      <div style="background:${badgeBg};color:${badgeColor};font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;white-space:nowrap">${daysLabel}</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Estimated ${currentQ.name} payment</div>
+      <div style="font-size:32px;font-weight:700;color:${isUrgent||isPast?badgeColor:'var(--text)'}">$${qTax.toFixed(0)}</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">Based on $${qNet.toFixed(0)} net profit × ${TAX_RATE*100}%</div>
+    </div>
+    <div class="summary-row"><span class="summary-row-label">${currentQ.name} income</span><span class="summary-row-val" style="color:var(--green)">$${qIncome.toFixed(2)}</span></div>
+    <div class="summary-row"><span class="summary-row-label">${currentQ.name} expenses</span><span class="summary-row-val" style="color:var(--red)">$${qExpense.toFixed(2)}</span></div>
+    <div class="summary-row"><span class="summary-row-label">${currentQ.name} net profit</span><span class="summary-row-val">$${qNet.toFixed(2)}</span></div>
+    <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px">
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Full year estimate</div>
+      <div class="summary-row"><span class="summary-row-label">YTD net profit</span><span class="summary-row-val">$${ytdNet.toFixed(2)}</span></div>
+      <div class="summary-row" style="border:none"><span class="summary-row-label">Est. total tax bill</span><span class="summary-row-val" style="color:var(--red)">$${ytdTax.toFixed(2)}</span></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6">Estimate based on ${TAX_RATE*100}% of net profit. Consult a CPA for your exact amount.</div>
+  `;
+}
+
+
+function toggleCard(contentId, chevronId) {
+  const el = document.getElementById(contentId);
+  const chevron = document.getElementById(chevronId);
+  const isOpen = el.style.display !== 'none';
+  if (isOpen) {
+    el.style.display = 'none';
+    chevron.style.transform = '';
+  } else {
+    el.style.display = 'block';
+    chevron.style.transform = 'rotate(90deg)';
+    // Trigger render if needed
+    if (contentId === 'income-bkdn' || contentId === 'expense-bkdn' || contentId === 'vehicle-bkdn' || contentId === 'mileage-bkdn') {
+      renderSummary();
+    }
+  }
+}
+
+function toggleCashFlow() {
+  const el = document.getElementById('cashflow-content');
+  const chevron = document.getElementById('cashflow-chevron');
+  const isOpen = el.style.display !== 'none';
+  if (isOpen) {
+    el.style.display = 'none';
+    chevron.style.transform = '';
+  } else {
+    el.style.display = 'block';
+    chevron.style.transform = 'rotate(90deg)';
+    renderCashFlow();
+  }
+}
+
+function renderCashFlow() {
+  const el = document.getElementById('cashflow-content');
+  if (!el) return;
+  const year = new Date().getFullYear();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  const currentMonth = now.getMonth();
+
+  const data = months.map((name, m) => {
+    const monthStr = String(m+1).padStart(2,'0');
+    const prefix = `${year}-${monthStr}`;
+    const income = entries.filter(e=>e.type==='income'&&e.date&&e.date.startsWith(prefix)).reduce((s,e)=>s+e.amount,0);
+    const expense = entries.filter(e=>(e.type==='expense'||e.type==='vehicle')&&e.date&&e.date.startsWith(prefix)).reduce((s,e)=>s+e.amount,0);
+    return { name, m, income, expense, net: income - expense };
+  });
+
+  const maxVal = Math.max(...data.map(d => Math.max(d.income, d.expense)), 1);
+  const hasData = data.some(d => d.income > 0 || d.expense > 0);
+
+  if (!hasData) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:8px 0">No data yet — log some entries to see your cash flow</div>';
+    return;
+  }
+
+  // LEGEND
+  const legend = `<div style="display:flex;gap:20px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:12px;height:12px;border-radius:3px;background:var(--green)"></div>Income</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:12px;height:12px;border-radius:3px;background:var(--red)"></div>Expenses</div>
+  </div>`;
+
+  // VERTICAL BAR CHART
+  const chartHeight = 160;
+  const cols = data.map(d => {
+    const isCurrent = d.m === currentMonth;
+    const isFuture = d.m > currentMonth;
+    const opacity = isFuture ? '0.25' : '1';
+    const incH = Math.round((d.income / maxVal) * chartHeight);
+    const expH = Math.round((d.expense / maxVal) * chartHeight);
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;opacity:${opacity}">
+      <div style="width:100%;height:${chartHeight}px;display:flex;align-items:flex-end;justify-content:center;gap:2px">
+        <div style="flex:1;height:${incH}px;background:var(--green);border-radius:3px 3px 0 0;min-height:${d.income>0?2:0}px"></div>
+        <div style="flex:1;height:${expH}px;background:var(--red);border-radius:3px 3px 0 0;min-height:${d.expense>0?2:0}px"></div>
+      </div>
+      <div style="font-size:10px;color:${isCurrent?'var(--accent2)':'var(--text3)'};font-weight:${isCurrent?'600':'400'};text-align:center">${d.name}</div>
+    </div>`;
+  }).join('');
+
+  const chart = `<div style="display:flex;align-items:flex-end;gap:3px;padding-bottom:4px">${cols}</div>`;
+
+  // MONTHLY LIST
+  const pastMonths = data.filter(d => (d.income > 0 || d.expense > 0) && d.m <= currentMonth);
+  const listHeader = `<div style="display:grid;grid-template-columns:40px 1fr 1fr 1fr;padding:8px 0;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">
+    <div></div><div>Income</div><div>Expenses</div><div>Net</div>
+  </div>`;
+  const listRows = pastMonths.map(d => `
+    <div style="display:grid;grid-template-columns:40px 1fr 1fr 1fr;padding:14px 0;align-items:center">
+      <div style="font-size:13px;font-weight:500;color:var(--text2)">${d.name}</div>
+      <div style="font-family:var(--mono);color:var(--green);font-size:13px">$${d.income.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+      <div style="font-family:var(--mono);color:var(--red);font-size:13px">$${d.expense.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+      <div style="font-family:var(--mono);color:${d.net>=0?'var(--green)':'var(--red)'};font-size:13px;font-weight:600">${d.net>=0?'+':'-'}$${Math.abs(d.net).toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+    </div>`).join('');
+
+  const list = pastMonths.length > 0
+    ? `<div style="margin-top:24px;padding-top:4px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:4px;font-weight:500">Month by month</div>
+        ${listHeader}${listRows}
+       </div>`
+    : '';
+
+  el.innerHTML = legend + chart + list;
 }
 
 loadData(); loadRoutes(); initDates(); refresh(); loadFromCloud(); renderRoutes();
