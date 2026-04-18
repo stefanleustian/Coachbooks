@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="black">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -11,19 +11,58 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #0f0f1a; --surface: #1a1a2e; --surface2: #22223a; --surface3: #2a2a45;
-  --accent: #7c6af7; --accent2: #a78bfa;
+  --bg: #000000; --surface: #0f0f0f; --surface2: #1a1a1a; --surface3: #242424;
+  --accent: #ffffff; --accent2: #bbbbbb;
   --green: #34d399; --green-bg: rgba(52,211,153,0.1);
   --red: #f87171; --red-bg: rgba(248,113,113,0.1);
   --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.1);
-  --text: #f1f0ff; --text2: #a09dc0; --text3: #635f80;
-  --border: rgba(124,106,247,0.15); --border2: rgba(124,106,247,0.3);
+  --text: #ffffff; --text2: #a0a0a0; --text3: #555555;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.16);
   --radius: 14px; --radius-sm: 8px;
   --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
 }
+/* THEMES — monotone, orange on logo only */
+[data-theme="black"] {
+  --bg: #000000; --surface: #0f0f0f; --surface2: #1a1a1a; --surface3: #242424;
+  --accent: #ffffff; --accent2: #bbbbbb;
+  --text: #ffffff; --text2: #a0a0a0; --text3: #555555;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.16);
+}
+[data-theme="gray"] {
+  --bg: #1e1e1e; --surface: #2a2a2a; --surface2: #353535; --surface3: #404040;
+  --accent: #e8e8e8; --accent2: #b0b0b0;
+  --text: #f5f5f5; --text2: #aaaaaa; --text3: #666666;
+  --border: rgba(255,255,255,0.09); --border2: rgba(255,255,255,0.18);
+}
+[data-theme="sunset"] {
+  --bg: transparent; --surface: rgba(28,18,36,0.88); --surface2: rgba(38,24,44,0.90); --surface3: rgba(48,30,52,0.92);
+  --accent: #e8a87c; --accent2: #c4856a;
+  --text: #f5ede0; --text2: #b89a8a; --text3: #7a6060;
+  --border: rgba(232,168,124,0.12); --border2: rgba(232,168,124,0.22);
+}
+[data-theme="cream"] {
+  --bg: #fdf8f0; --surface: #ffffff; --surface2: #faf3e8; --surface3: #f5ead8;
+  --accent: #5a4030; --accent2: #3a2010;
+  --text: #1a1008; --text2: #5a4030; --text3: #9a8070;
+  --border: rgba(90,64,48,0.1); --border2: rgba(90,64,48,0.2);
+}
+[data-theme="light"] {
+  --bg: #fafafa; --surface: #ffffff; --surface2: #f5f5f5; --surface3: #eeeeee;
+  --accent: #111111; --accent2: #555555;
+  --text: #111111; --text2: #555555; --text3: #999999;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.16);
+}
+.theme-btn { border: 2px solid transparent; border-radius: var(--radius-sm); padding: 10px 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.15s; background: var(--surface2); }
+.theme-btn.active { border-color: var(--accent); }
+.theme-btn:hover { border-color: var(--border2); }
+.theme-swatch { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); }
+.theme-label { font-size: 10px; font-weight: 500; color: var(--text2); text-align: center; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); overscroll-behavior: none; }
 body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: -webkit-fill-available; }
+[data-theme="sunset"] body { background: linear-gradient(180deg, #152240 0%, #1a2848 10%, #1e1f48 22%, #2e1540 35%, #401838 48%, #561e30 60%, #6b2a28 72%, #8a3a22 84%, #b05a30 100%) fixed; }
+[data-theme="sunset"] .header { background: rgba(21,34,64,0.94); }
+[data-theme="sunset"] .nav { background: rgba(21,34,64,0.94); }
 .header { padding: 52px 20px 16px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
 .header-logo { display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 34px; height: 34px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
@@ -318,6 +357,37 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
           <div style="font-size:12px;color:var(--text3);margin-top:2px">Import from Google Sheets CSV</div>
         </div>
         <svg style="margin-left:auto;flex-shrink:0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="toggleAppearance()">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:40px;height:40px;background:rgba(249,115,22,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:500;color:var(--text)">Appearance</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Theme and display settings</div>
+        </div>
+        <svg id="chevron-appearance" style="margin-left:auto;flex-shrink:0;transition:transform 0.2s" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div id="appearance-content" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="margin-bottom:16px">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;font-weight:500">Mode</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="theme-btn" id="mode-dark" onclick="event.stopPropagation();setMode('dark')">
+              <div class="theme-swatch" style="background:#000000"></div>
+              <div class="theme-label">Dark</div>
+            </button>
+            <button class="theme-btn" id="mode-light" onclick="event.stopPropagation();setMode('light')">
+              <div class="theme-swatch" style="background:#fafafa;border:1px solid #ddd"></div>
+              <div class="theme-label">Light</div>
+            </button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;font-weight:500">Theme</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="theme-grid"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1211,6 +1281,20 @@ function toggleCard(contentId, chevronId) {
   }
 }
 
+function toggleAppearance() {
+  const el = document.getElementById('appearance-content');
+  const chevron = document.getElementById('chevron-appearance');
+  const isOpen = el.style.display !== 'none';
+  if (isOpen) {
+    el.style.display = 'none';
+    chevron.style.transform = '';
+  } else {
+    el.style.display = 'block';
+    chevron.style.transform = 'rotate(90deg)';
+    renderThemeUI();
+  }
+}
+
 function toggleCashFlow() {
   const el = document.getElementById('cashflow-content');
   const chevron = document.getElementById('cashflow-chevron');
@@ -1297,7 +1381,64 @@ function renderCashFlow() {
   el.innerHTML = legend + chart + list;
 }
 
-loadData(); loadRoutes(); initDates(); refresh(); loadFromCloud(); renderRoutes();
+
+// THEME
+const THEME_KEY = 'coachbooks_theme';
+const DARK_THEMES = [
+  { id: 'black',  label: 'Black',  bg: '#000000', bg2: '#1a1a1a' },
+  { id: 'gray',   label: 'Gray',   bg: '#1e1e1e', bg2: '#404040' },
+  { id: 'sunset', label: 'Sunset', bg: '#1c1424', bg2: '#e8a87c' },
+];
+const LIGHT_THEMES = [
+  { id: 'light', label: 'White', bg: '#fafafa', bg2: '#eeeeee' },
+  { id: 'cream', label: 'Cream', bg: '#fdf8f0', bg2: '#f5ead8' },
+];
+
+let currentMode = 'dark';
+let currentTheme = 'midnight';
+
+function loadTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved) {
+      const { mode, theme } = JSON.parse(saved);
+      currentMode = mode || 'dark';
+      currentTheme = theme || 'black';
+    }
+  } catch(e) {}
+  applyTheme(currentTheme);
+}
+
+function applyTheme(themeId) {
+  document.documentElement.setAttribute('data-theme', themeId);
+  currentTheme = themeId;
+  currentMode = ['light','cream'].includes(themeId) ? 'light' : 'dark';
+  try { localStorage.setItem(THEME_KEY, JSON.stringify({mode:currentMode,theme:currentTheme})); } catch(e) {}
+  renderThemeUI();
+}
+
+function setMode(mode) {
+  if (mode === 'dark') applyTheme('black');
+  else applyTheme('light');
+}
+
+function renderThemeUI() {
+  const grid = document.getElementById('theme-grid');
+  if (!grid || grid.offsetParent === null && !document.getElementById('appearance-content').style.display) return;
+  const themes = currentMode === 'dark' ? DARK_THEMES : LIGHT_THEMES;
+  grid.innerHTML = themes.map(t => `
+    <button class="theme-btn ${currentTheme===t.id?'active':''}" onclick="event.stopPropagation();applyTheme('${t.id}')">
+      <div class="theme-swatch" style="background:linear-gradient(160deg,${t.bg} 40%,${t.bg2} 100%);${t.bg==='#fafafa'||t.bg==='#fdf8f0'?'border:1px solid #ddd':''}"></div>
+      <div class="theme-label">${t.label}</div>
+    </button>`).join('');
+  // Update mode buttons
+  const darkBtn = document.getElementById('mode-dark');
+  const lightBtn = document.getElementById('mode-light');
+  if (darkBtn) darkBtn.classList.toggle('active', currentMode==='dark');
+  if (lightBtn) lightBtn.classList.toggle('active', currentMode==='light');
+}
+
+loadData(); loadRoutes(); loadTheme(); initDates(); refresh(); loadFromCloud(); renderRoutes();
 </script>
 </body>
 </html>
