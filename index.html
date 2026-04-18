@@ -229,6 +229,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 
   <!-- SCAN -->
   <div class="section" id="sec-scan">
+    <button class="btn btn-ghost" style="margin-bottom:14px;margin-top:8px" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-more').classList.add('active')">← Back</button>
     <div class="section-header">Scan receipt</div>
     <div class="section-sub">AI reads your receipt and saves a compressed photo</div>
     <div id="scan-upload-state">
@@ -250,6 +251,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
       <div id="scan-form-el" style="display:none">
         <div class="card" style="margin-top:0">
           <div class="card-title">Confirm expense</div>
+          <div id="r-type-badge" style="display:none;margin-bottom:14px"></div>
           <div class="field-row">
             <div class="field"><label>Date</label><input type="date" id="r-date"/></div>
             <div class="field"><label>Amount ($)</label><input type="number" id="r-amount" placeholder="0.00" min="0" step="0.01"/></div>
@@ -282,7 +284,19 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   <div class="section" id="sec-more">
     <div class="section-header">More</div>
     <div class="section-sub">Tools you use less often</div>
-    <div class="card" style="cursor:pointer" onclick="showSection('invoice', document.querySelector('.nav-btn:nth-child(5)'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-invoice').classList.add('active')">
+    <div class="card" style="cursor:pointer" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-scan').classList.add('active')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:40px;height:40px;background:rgba(52,211,153,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:500;color:var(--text)">Scan receipt</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">AI reads and categorizes your receipt</div>
+        </div>
+        <svg style="margin-left:auto;flex-shrink:0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-invoice').classList.add('active')">
       <div style="display:flex;align-items:center;gap:14px">
         <div style="width:40px;height:40px;background:rgba(124,106,247,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
@@ -396,6 +410,8 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
         <button class="btn btn-accent" onclick="exportCSV()">Download CSV</button>
         <button class="btn btn-ghost" style="margin-top:0" onclick="clearAll()">Clear all</button>
       </div>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="exportReceipts()" id="export-receipts-btn">Download all receipt photos</button>
+      <div id="export-receipts-status" style="font-size:12px;color:var(--text3);margin-top:8px;display:none"></div>
     </div>
   </div>
 
@@ -405,10 +421,6 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   <button class="nav-btn active" onclick="showSection('log',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
     Log<div class="nav-dot"></div>
-  </button>
-  <button class="nav-btn" onclick="showSection('scan',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-    Scan<div class="nav-dot"></div>
   </button>
   <button class="nav-btn" onclick="showSection('ledger',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
@@ -447,7 +459,11 @@ let syncStatus = 'idle'; // idle, syncing, synced, error
 
 function loadData() { try { const r=localStorage.getItem(STORAGE_KEY); if(r) entries=JSON.parse(r); } catch(e) { entries=[]; } }
 function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) {}
+  // Strip receipt images from local storage to keep it small — images live in Supabase only
+  try {
+    const lean = entries.map(e => { const {receiptImg, ...rest} = e; return rest; });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(lean));
+  } catch(e) {}
   syncToCloud();
 }
 
@@ -491,9 +507,11 @@ async function loadFromCloud() {
         miles: r.miles,
         category: r.category,
         note: r.note,
-        receiptImg: r.receipt_img
+        receiptImg: r.receipt_img  // kept in memory, not written to localStorage
       }));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      // Save lean version to localStorage (no images)
+      const lean = entries.map(e => { const {receiptImg, ...rest} = e; return rest; });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(lean));
       refresh();
       renderLedger();
       renderSummary();
@@ -630,12 +648,32 @@ function renderLedger() {
   }).join('');
 }
 
-function viewReceipt(id) {
-  const e=entries.find(x=>x.id===id); if(!e||!e.receiptImg)return;
-  document.getElementById('modal-img').src=e.receiptImg;
+async function viewReceipt(id) {
+  const e=entries.find(x=>x.id===id); if(!e)return;
+  const modal = document.getElementById('receipt-modal');
+  const modalImg = document.getElementById('modal-img');
   document.getElementById('modal-title').textContent=e.category;
   document.getElementById('modal-sub').textContent=[fmtDate(e.date),e.amount?'$'+e.amount.toFixed(2):'',e.note].filter(Boolean).join(' · ');
-  document.getElementById('receipt-modal').classList.add('open');
+  modal.classList.add('open');
+  if (e.receiptImg) {
+    modalImg.src = e.receiptImg;
+  } else {
+    // Load from cloud
+    modalImg.src = '';
+    modalImg.alt = 'Loading...';
+    try {
+      const data = await supaFetch('GET', `/rest/v1/entries?id=eq.${e.id}&select=receipt_img`);
+      if (data && data[0] && data[0].receipt_img) {
+        e.receiptImg = data[0].receipt_img; // cache in memory
+        modalImg.src = e.receiptImg;
+        modalImg.alt = 'Receipt';
+      } else {
+        modalImg.alt = 'No receipt photo';
+      }
+    } catch(err) {
+      modalImg.alt = 'Could not load receipt';
+    }
+  }
 }
 function closeModal(){ document.getElementById('receipt-modal').classList.remove('open'); }
 
@@ -686,6 +724,44 @@ function exportCSV() {
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`CoachBooks_${new Date().getFullYear()}.csv`; a.click();
   showToast('CSV downloaded','success');
 }
+async function exportReceipts() {
+  const btn = document.getElementById('export-receipts-btn');
+  const status = document.getElementById('export-receipts-status');
+  btn.disabled = true;
+  btn.textContent = 'Loading receipts from cloud...';
+  status.style.display = 'block';
+  status.textContent = 'Fetching receipt photos from Supabase...';
+
+  try {
+    // Load all entries with receipt images from cloud
+    const data = await supaFetch('GET', '/rest/v1/entries?receipt_img=not.is.null&select=id,date,category,amount,receipt_img');
+    if (!data || data.length === 0) { showToast('No receipt photos found'); btn.disabled=false; btn.textContent='Download all receipt photos'; return; }
+
+    status.textContent = `Found ${data.length} receipts — downloading...`;
+    let count = 0;
+    for (const row of data) {
+      try {
+        const filename = `receipt_${row.date}_${(row.category||'expense').replace(/[^a-z0-9]/gi,'_')}_$${row.amount||0}.jpg`;
+        const a = document.createElement('a');
+        a.href = row.receipt_img;
+        a.download = filename;
+        a.click();
+        count++;
+        status.textContent = `Downloaded ${count} of ${data.length}...`;
+        await new Promise(r => setTimeout(r, 600));
+      } catch(err) { console.error('Error downloading receipt', err); }
+    }
+    btn.disabled = false;
+    btn.textContent = 'Download all receipt photos';
+    status.textContent = `Done — ${count} receipt photos downloaded.`;
+    showToast(count + ' receipts downloaded', 'success');
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Download all receipt photos';
+    status.textContent = 'Error loading receipts — check your connection.';
+  }
+}
+
 function clearAll() {
   if(!confirm('Clear ALL entries and receipt photos? This cannot be undone.'))return;
   entries=[]; saveData(); refresh(); renderLedger(); renderSummary();
@@ -716,7 +792,7 @@ function processFile(file) {
 
 async function scanWithAI(dataUrl) {
   const base64=dataUrl.split(',')[1];
-  const prompt=`You are a bookkeeper for a self-employed tennis coach. Analyze this receipt. Respond ONLY with valid JSON, no markdown:\n{"date":"YYYY-MM-DD or null","amount":number or null,"vendor":"store name","description":"brief description","suggested_category":"one of: Court fees|Equipment / balls|Racket / strings|Coaching certification|Software / apps|Phone / communication|Marketing|Insurance|Professional development|Meals (business)|Other expense"}`;
+  const prompt=`You are a bookkeeper for a self-employed tennis coach. Analyze this receipt. Respond ONLY with valid JSON, no markdown:\n{"date":"YYYY-MM-DD or null","amount":number or null,"vendor":"store name","description":"brief description","expense_type":"business or vehicle","suggested_category":"if business, one of: Court fees|Equipment / balls|Racket / strings|Coaching certification|Software / apps|Phone / communication|Marketing|Insurance|Professional development|Meals (business)|Other expense. If vehicle, one of: Gas|Oil change|Car insurance|Car repair / maintenance|Other vehicle"}`;
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
     const data=await res.json();
@@ -744,9 +820,10 @@ async function scanWithAI(dataUrl) {
 function confirmScan() {
   const a=parseFloat(document.getElementById('r-amount').value);
   if(!a||a<=0){showToast('Enter a valid amount');return;}
-  entries.push({id:Date.now(),type:'expense',date:document.getElementById('r-date').value,amount:a,category:document.getElementById('r-cat').value,note:document.getElementById('r-note').value,receiptImg:pendingReceipt});
-  saveData();refresh();pendingReceipt=null;resetScan();
-  showToast('Expense + receipt photo saved','success');
+  const entryType = window._scanIsVehicle ? 'vehicle' : 'expense';
+  entries.push({id:Date.now(),type:entryType,date:document.getElementById('r-date').value,amount:a,category:document.getElementById('r-cat').value,note:document.getElementById('r-note').value,receiptImg:pendingReceipt});
+  saveData();refresh();pendingReceipt=null;window._scanIsVehicle=false;resetScan();
+  showToast((entryType==='vehicle'?'Vehicle':'Business')+' expense + receipt saved','success');
 }
 
 function resetScan() {
