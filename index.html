@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#0f0f1a"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="CoachBooks"/>
-<title>CoachBooks</title>
+<meta name="apple-mobile-web-app-title" content="WriteOff"/>
+<title>WriteOff</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -186,7 +186,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 <div class="header">
   <div class="header-logo">
     <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
-    <div class="logo-text">Coach<span>Books</span></div>
+    <div class="logo-text">Write<span>Off</span></div>
   </div>
   <div class="header-year" id="sync-badge">2026</div>
 </div>
@@ -554,7 +554,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 
 <script>
 const IRS_RATE = 0.67;
-const STORAGE_KEY = 'coachbooks_v2';
+const STORAGE_KEY = 'writeoff_v2';
 const SUPA_URL = 'https://xdqsvdpasdpzckkznzcb.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkcXN2ZHBhc2RwemNra3puemNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTIyMDgsImV4cCI6MjA5MTk2ODIwOH0.T5S1GSOUU4weGJkEaEznV6ujKC0yepfg858X1eA4cAk';
 let entries = [];
@@ -827,7 +827,7 @@ function exportCSV() {
   [...entries].sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{rows.push([e.date,e.type,e.category||'',e.note||'',e.amount?e.amount.toFixed(2):'',e.miles?e.miles.toFixed(1):'',e.receiptImg?'Yes':'No']);});
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`CoachBooks_${new Date().getFullYear()}.csv`; a.click();
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`WriteOff_${new Date().getFullYear()}.csv`; a.click();
   showToast('CSV downloaded','success');
 }
 async function exportReceipts() {
@@ -1091,7 +1091,7 @@ function printInvoice() {
     @media print { body { margin: 0; } }
   </style></head><body>
   <div class="header">
-    <div class="brand">CoachBooks</div>
+    <div class="brand">WriteOff</div>
     <div class="invoice-meta"><strong>Invoice #${d.invNum}</strong>Date: ${d.invDate ? fmtDate(d.invDate) : today()}</div>
   </div>
   <div class="parties">
@@ -1131,7 +1131,7 @@ function logInvoiceAsIncome() {
 
 
 // SAVED ROUTES
-const ROUTES_KEY = 'coachbooks_routes_v1';
+const ROUTES_KEY = 'writeoff_routes_v1';
 let savedRoutes = [
   { name: 'Scholl', miles: 51 },
   { name: 'Melwood', miles: 42 },
@@ -1385,7 +1385,7 @@ function renderCashFlow() {
 
 
 // THEME
-const THEME_KEY = 'coachbooks_theme';
+const THEME_KEY = 'writeoff_theme';
 const DARK_THEMES = [
   { id: 'black',  label: 'Black',  bg: '#000000', bg2: '#1a1a1a' },
   { id: 'gray',   label: 'Gray',   bg: '#1e1e1e', bg2: '#404040' },
