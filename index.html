@@ -62,6 +62,12 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .btn-accent { background: var(--accent); color: white; }
 .btn-accent:active { transform: scale(0.98); }
 .btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); margin-top: 10px; }
+.route-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.15s; }
+.route-btn:hover { border-color: var(--accent); background: rgba(124,106,247,0.08); }
+.route-btn-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.route-btn-miles { font-size: 11px; color: var(--accent2); font-family: var(--mono); }
+.route-btn-del { font-size: 10px; color: var(--text3); margin-top: 3px; cursor: pointer; }
+.route-btn-del:hover { color: var(--red); }
 .upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface); }
 .upload-zone:hover, .upload-zone.dragover { background: rgba(124,106,247,0.08); border-color: var(--accent); }
 .upload-icon-wrap { width: 52px; height: 52px; background: rgba(124,106,247,0.12); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
@@ -93,6 +99,9 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .entry-icon.expense svg { stroke: var(--red); fill: none; stroke-width: 2; }
 .entry-icon.mileage { background: var(--blue-bg); }
 .entry-icon.mileage svg { stroke: var(--blue); fill: none; stroke-width: 2; }
+.entry-icon.vehicle { background: rgba(251,191,36,0.1); }
+.entry-icon.vehicle svg { stroke: #fbbf24; fill: none; stroke-width: 2; }
+.entry-amount.vehicle { color: #fbbf24; }
 .entry-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; cursor: pointer; border: 1px solid var(--border2); }
 .entry-body { flex: 1; min-width: 0; }
 .entry-cat { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -172,7 +181,32 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
       <button class="btn btn-accent" onclick="addIncome()">Add income</button>
     </div>
     <div class="card">
-      <div class="card-title">Expense</div>
+      <div class="card-title">Mileage</div>
+      <div class="field"><label>Date</label><input type="date" id="mil-date"/></div>
+      <div class="field">
+        <label>Saved routes — tap to log instantly</label>
+        <div id="routes-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px"></div>
+      </div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:14px">
+        <div class="card-title" style="margin-bottom:12px">Or enter manually</div>
+        <div class="field-row">
+          <div class="field"><label>Miles</label><input type="number" id="mil-miles" placeholder="0.0" min="0" step="0.1"/></div>
+          <div class="field"><label>Purpose</label><select id="mil-purpose"><option>Drive to lesson</option><option>Drive to court</option><option>Equipment run</option><option>Client meeting</option><option>Other</option></select></div>
+        </div>
+        <div class="field"><label>Notes</label><input type="text" id="mil-note" placeholder="e.g. Santa Monica → UCLA Tennis"/></div>
+        <button class="btn btn-accent" onclick="addMileage()">Add mileage</button>
+      </div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:14px">
+        <div class="card-title" style="margin-bottom:12px">Manage saved routes</div>
+        <div class="field-row">
+          <div class="field"><label>Court name</label><input type="text" id="route-name" placeholder="e.g. Griffith Park"/></div>
+          <div class="field"><label>Miles</label><input type="number" id="route-miles" placeholder="0.0" min="0" step="0.1"/></div>
+        </div>
+        <button class="btn btn-ghost" style="margin-top:0" onclick="addRoute()">Save new route</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Business expense</div>
       <div class="field-row">
         <div class="field"><label>Date</label><input type="date" id="exp-date"/></div>
         <div class="field"><label>Amount ($)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"/></div>
@@ -182,14 +216,14 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
       <button class="btn btn-accent" onclick="addExpense()">Add expense</button>
     </div>
     <div class="card">
-      <div class="card-title">Mileage</div>
+      <div class="card-title">Vehicle expense</div>
       <div class="field-row">
-        <div class="field"><label>Date</label><input type="date" id="mil-date"/></div>
-        <div class="field"><label>Miles</label><input type="number" id="mil-miles" placeholder="0.0" min="0" step="0.1"/></div>
+        <div class="field"><label>Date</label><input type="date" id="veh-date"/></div>
+        <div class="field"><label>Amount ($)</label><input type="number" id="veh-amount" placeholder="0.00" min="0" step="0.01"/></div>
       </div>
-      <div class="field"><label>Purpose</label><select id="mil-purpose"><option>Drive to lesson</option><option>Drive to court</option><option>Equipment run</option><option>Client meeting</option><option>Other</option></select></div>
-      <div class="field"><label>Notes</label><input type="text" id="mil-note" placeholder="e.g. Santa Monica → UCLA Tennis"/></div>
-      <button class="btn btn-accent" onclick="addMileage()">Add mileage</button>
+      <div class="field"><label>Category</label><select id="veh-cat"><option>Gas</option><option>Oil change</option><option>Car insurance</option><option>Car repair / maintenance</option><option>Other vehicle</option></select></div>
+      <div class="field"><label>Description</label><input type="text" id="veh-note" placeholder="e.g. Shell gas station"/></div>
+      <button class="btn btn-accent" onclick="addVehicleExpense()">Add vehicle expense</button>
     </div>
   </div>
 
@@ -237,14 +271,46 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
       <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
       <button class="filter-chip" onclick="setFilter('income',this)">Income</button>
       <button class="filter-chip" onclick="setFilter('expense',this)">Expenses</button>
+      <button class="filter-chip" onclick="setFilter('vehicle',this)">Vehicle</button>
       <button class="filter-chip" onclick="setFilter('mileage',this)">Mileage</button>
     </div>
     <div id="ledger-list"></div>
   </div>
 
 
+  <!-- MORE -->
+  <div class="section" id="sec-more">
+    <div class="section-header">More</div>
+    <div class="section-sub">Tools you use less often</div>
+    <div class="card" style="cursor:pointer" onclick="showSection('invoice', document.querySelector('.nav-btn:nth-child(5)'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-invoice').classList.add('active')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:40px;height:40px;background:rgba(124,106,247,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:500;color:var(--text)">Invoice</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Create and send client invoices</div>
+        </div>
+        <svg style="margin-left:auto;flex-shrink:0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-import').classList.add('active')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:40px;height:40px;background:rgba(96,165,250,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:500;color:var(--text)">Import</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Import from Google Sheets CSV</div>
+        </div>
+        <svg style="margin-left:auto;flex-shrink:0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+  </div>
+
   <!-- INVOICE -->
   <div class="section" id="sec-invoice">
+    <button class="btn btn-ghost" style="margin-bottom:14px;margin-top:8px" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-more').classList.add('active')">← Back</button>
     <div class="section-header">Invoice</div>
     <div class="section-sub">Create and send a client invoice</div>
 
@@ -289,6 +355,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 
   <!-- IMPORT -->
   <div class="section" id="sec-import">
+    <button class="btn btn-ghost" style="margin-bottom:14px;margin-top:8px" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-more').classList.add('active')">← Back</button>
     <div class="section-header">Import from Sheets</div>
     <div class="section-sub">Upload your existing log as a CSV file</div>
     <div class="card">
@@ -319,8 +386,9 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
     <div class="section-header">Summary</div>
     <div class="section-sub">Year-to-date tax overview</div>
     <div class="card"><div class="card-title">Income breakdown</div><div id="income-bkdn"></div></div>
-    <div class="card"><div class="card-title">Expense breakdown</div><div id="expense-bkdn"></div></div>
-    <div class="card"><div class="card-title">Mileage deduction</div><div id="mileage-bkdn"></div></div>
+    <div class="card"><div class="card-title">Business expense breakdown</div><div id="expense-bkdn"></div></div>
+    <div class="card"><div class="card-title">Vehicle deduction — which is better?</div><div id="vehicle-bkdn"></div></div>
+    <div class="card"><div class="card-title">Mileage log</div><div id="mileage-bkdn"></div></div>
     <div class="card">
       <div class="card-title">Export for taxes</div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Download a CSV to give your accountant or import into TurboTax.</p>
@@ -350,13 +418,9 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
     Summary<div class="nav-dot"></div>
   </button>
-  <button class="nav-btn" onclick="showSection('invoice',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
-    Invoice<div class="nav-dot"></div>
-  </button>
-  <button class="nav-btn" onclick="showSection('import',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-    Import<div class="nav-dot"></div>
+  <button class="nav-btn" onclick="showSection('more',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+    More<div class="nav-dot"></div>
   </button>
 </nav>
 
@@ -467,7 +531,7 @@ function updateSyncBadge() {
 }
 function today() { return new Date().toISOString().split('T')[0]; }
 function initDates() {
-  ['inc-date','exp-date','mil-date','r-date','inv-date'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=today(); });
+  ['inc-date','exp-date','mil-date','r-date','inv-date','veh-date'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=today(); });
   document.getElementById('sync-badge').textContent = new Date().getFullYear();
 }
 function showToast(msg, type='') {
@@ -511,6 +575,14 @@ function addExpense() {
   document.getElementById('exp-amount').value=''; document.getElementById('exp-note').value='';
   showToast('Expense added','success');
 }
+function addVehicleExpense() {
+  const a=parseFloat(document.getElementById('veh-amount').value);
+  if(!a||a<=0){showToast('Enter a valid amount');return;}
+  entries.push({id:Date.now(),type:'vehicle',date:document.getElementById('veh-date').value,amount:a,category:document.getElementById('veh-cat').value,note:document.getElementById('veh-note').value});
+  saveData();refresh();
+  document.getElementById('veh-amount').value=''; document.getElementById('veh-note').value='';
+  showToast('Vehicle expense added','success');
+}
 function addMileage() {
   const m=parseFloat(document.getElementById('mil-miles').value);
   if(!m||m<=0){showToast('Enter valid miles');return;}
@@ -523,7 +595,7 @@ function deleteEntry(id) { entries=entries.filter(e=>e.id!==id); saveData();refr
 
 function refresh() {
   const rev=entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
-  const exp=entries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  const exp=entries.filter(e=>e.type==='expense'||e.type==='vehicle').reduce((s,e)=>s+e.amount,0);
   const miles=entries.filter(e=>e.type==='mileage').reduce((s,e)=>s+e.miles,0);
   const net=rev-exp;
   document.getElementById('m-rev').textContent='$'+rev.toLocaleString('en-US',{maximumFractionDigits:0});
@@ -540,6 +612,7 @@ function setFilter(f,btn){ ledgerFilter=f; document.querySelectorAll('.filter-ch
 const icons={
   income:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
   expense:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`,
+  vehicle:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2M5 17a2 2 0 104 0M15 17a2 2 0 104 0"/></svg>`,
   mileage:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`
 };
 
@@ -549,7 +622,7 @@ function renderLedger() {
   f=[...f].sort((a,b)=>b.date.localeCompare(a.date));
   if(f.length===0){list.innerHTML='<div class="empty-state">No entries yet</div>';return;}
   list.innerHTML=f.map(e=>{
-    const amt=e.type==='mileage'?e.miles.toFixed(1)+' mi':(e.type==='expense'?'-':'')+'$'+e.amount.toFixed(2);
+    const amt=e.type==='mileage'?e.miles.toFixed(1)+' mi':((e.type==='expense'||e.type==='vehicle')?'-':'')+'$'+e.amount.toFixed(2);
     const left=e.receiptImg
       ?`<img class="entry-thumb" src="${e.receiptImg}" alt="Receipt" onclick="viewReceipt(${e.id})">`
       :`<div class="entry-icon ${e.type}">${icons[e.type]}</div>`;
@@ -570,13 +643,38 @@ function renderSummary() {
   const rev=entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
   const exp=entries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
   const miles=entries.filter(e=>e.type==='mileage').reduce((s,e)=>s+e.miles,0);
+  const veh=entries.filter(e=>e.type==='vehicle').reduce((s,e)=>s+e.amount,0);
   const ded=miles*IRS_RATE;
-  const ig={},eg={};
+  const ig={},eg={},vg={};
   entries.filter(e=>e.type==='income').forEach(e=>{ig[e.category]=(ig[e.category]||0)+e.amount});
   entries.filter(e=>e.type==='expense').forEach(e=>{eg[e.category]=(eg[e.category]||0)+e.amount});
+  entries.filter(e=>e.type==='vehicle').forEach(e=>{vg[e.category]=(vg[e.category]||0)+e.amount});
+
   document.getElementById('income-bkdn').innerHTML=Object.keys(ig).length===0?'<div style="font-size:13px;color:var(--text3)">No income logged yet</div>':Object.entries(ig).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--green)">$${v.toFixed(2)}</span></div>`).join('');
   document.getElementById('expense-bkdn').innerHTML=Object.keys(eg).length===0?'<div style="font-size:13px;color:var(--text3)">No expenses logged yet</div>':Object.entries(eg).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="summary-row"><span class="summary-row-label">${k}</span><span class="summary-row-val" style="color:var(--red)">$${v.toFixed(2)}</span></div>`).join('');
   document.getElementById('mileage-bkdn').innerHTML=miles===0?'<div style="font-size:13px;color:var(--text3)">No mileage logged yet</div>':`<div class="summary-row"><span class="summary-row-label">Total miles</span><span class="summary-row-val">${miles.toFixed(1)} mi</span></div><div class="summary-row"><span class="summary-row-label">IRS rate (2025)</span><span class="summary-row-val">$${IRS_RATE}/mi</span></div><div class="summary-row"><span class="summary-row-label">Est. deduction</span><span class="summary-row-val" style="color:var(--green)">$${ded.toFixed(2)}</span></div>`;
+
+  const mileageWins = ded >= veh;
+  const vehEl = document.getElementById('vehicle-bkdn');
+  if(vehEl) {
+    const badge = (val, wins) => wins ? `<span style="background:var(--green-bg);color:var(--green);font-size:11px;padding:2px 8px;border-radius:99px;margin-left:8px;font-weight:600">use this</span>` : '';
+    vehEl.innerHTML = `
+      <div class="summary-row" style="align-items:flex-start;padding-bottom:14px;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px">Standard mileage${badge(ded,mileageWins)}</div>
+          <div style="font-size:11px;color:var(--text3)">${miles.toFixed(0)} mi × $${IRS_RATE}/mi</div>
+        </div>
+        <span class="summary-row-val" style="color:${mileageWins?'var(--green)':'var(--text2)'}">$${ded.toFixed(2)}</span>
+      </div>
+      <div class="summary-row" style="align-items:flex-start;padding-top:14px">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px">Actual vehicle expenses${badge(veh,!mileageWins)}</div>
+          <div style="font-size:11px;color:var(--text3)">${Object.keys(vg).length===0?'No vehicle expenses logged':Object.entries(vg).map(([k,v])=>k+': $'+v.toFixed(0)).join(', ')}</div>
+        </div>
+        <span class="summary-row-val" style="color:${!mileageWins?'var(--green)':'var(--text2)'}">$${veh.toFixed(2)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6">You can only claim one method. Keep tracking both and decide at tax time.</div>`;
+  }
 }
 
 function exportCSV() {
@@ -848,7 +946,56 @@ function logInvoiceAsIncome() {
   invoiceData = null;
 }
 
-loadData(); initDates(); refresh(); loadFromCloud();
+
+// SAVED ROUTES
+const ROUTES_KEY = 'coachbooks_routes_v1';
+let savedRoutes = [
+  { name: 'Scholl', miles: 51 },
+  { name: 'Melwood', miles: 42 },
+  { name: 'Cheviot', miles: 7 },
+  { name: 'Palisades Tennis', miles: 15 },
+  { name: 'Fremont Park', miles: 42 }
+];
+
+function loadRoutes() {
+  try { const r = localStorage.getItem(ROUTES_KEY); if(r) savedRoutes = JSON.parse(r); } catch(e) {}
+}
+function saveRoutes() {
+  try { localStorage.setItem(ROUTES_KEY, JSON.stringify(savedRoutes)); } catch(e) {}
+}
+function renderRoutes() {
+  const grid = document.getElementById('routes-grid');
+  if (!grid) return;
+  grid.innerHTML = savedRoutes.map((r, i) => `
+    <div class="route-btn" onclick="quickLogMileage('${r.name}', ${r.miles})">
+      <div class="route-btn-name">${r.name}</div>
+      <div class="route-btn-miles">${r.miles} mi</div>
+      <div class="route-btn-del" onclick="event.stopPropagation();deleteRoute(${i})">remove</div>
+    </div>`).join('');
+}
+function quickLogMileage(name, miles) {
+  const date = document.getElementById('mil-date').value || today();
+  entries.push({ id: Date.now(), type: 'mileage', date, miles, category: 'Drive to lesson', note: name });
+  saveData(); refresh();
+  showToast(name + ' — ' + miles + ' mi logged', 'success');
+}
+function addRoute() {
+  const name = document.getElementById('route-name').value.trim();
+  const miles = parseFloat(document.getElementById('route-miles').value);
+  if (!name) { showToast('Enter a court name'); return; }
+  if (!miles || miles <= 0) { showToast('Enter miles'); return; }
+  savedRoutes.push({ name, miles });
+  saveRoutes(); renderRoutes();
+  document.getElementById('route-name').value = '';
+  document.getElementById('route-miles').value = '';
+  showToast(name + ' saved!', 'success');
+}
+function deleteRoute(i) {
+  savedRoutes.splice(i, 1);
+  saveRoutes(); renderRoutes();
+}
+
+loadData(); loadRoutes(); initDates(); refresh(); loadFromCloud(); renderRoutes();
 </script>
 </body>
 </html>
