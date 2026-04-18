@@ -167,6 +167,22 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
 .mic-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
 .voice-result { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--text2); border: 1px solid var(--border); display: none; line-height: 1.6; }
+.fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 70px); right: 20px; width: 52px; height: 52px; background: #f97316; border-radius: 50%; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 200; box-shadow: 0 4px 16px rgba(249,115,22,0.4); transition: transform 0.15s; }
+.fab:active { transform: scale(0.92); }
+.fab svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 2; }
+.fab.visible { display: flex; }
+.daily-modal { display: none; position: fixed; inset: 0; z-index: 9997; }
+.daily-modal.open { display: block; }
+.daily-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
+.daily-sheet { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-radius: 20px 20px 0 0; padding: 20px 20px calc(env(safe-area-inset-bottom) + 20px); }
+.daily-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 99px; margin: 0 auto 20px; }
+.daily-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.daily-sub { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+.route-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.route-chip { padding: 10px 6px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); font-size: 12px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; transition: all 0.15s; }
+.route-chip.selected { border-color: #f97316; background: rgba(249,115,22,0.1); color: #f97316; }
+.route-chip-miles { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.route-chip.selected .route-chip-miles { color: #f97316; opacity: 0.7; }
 .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-10px); background: var(--surface3); border: 1px solid var(--border2); border-radius: 99px; padding: 10px 20px; font-size: 13px; color: var(--text); z-index: 9999; opacity: 0; transition: all 0.25s; white-space: nowrap; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { border-color: rgba(52,211,153,0.4); color: var(--green); }
@@ -222,6 +238,7 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
     </div>
     <div class="section-sub" style="margin-top:0">Record income, expenses, or mileage</div>
     <div class="voice-result" id="voice-result"></div>
+
     <div class="card">
       <div class="card-title">Income</div>
       <div class="field-row">
@@ -552,6 +569,42 @@ body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; 
   </button>
 </nav>
 
+<!-- FLOATING ACTION BUTTON -->
+<button class="fab" id="fab-daily" onclick="openDailyModal()">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<!-- DAILY SUMMARY MODAL -->
+<div class="daily-modal" id="daily-modal">
+  <div class="daily-backdrop" onclick="closeDailyModal()"></div>
+  <div class="daily-sheet">
+    <div class="daily-handle"></div>
+    <div class="daily-title">Log today</div>
+    <div class="daily-sub" id="daily-date-label">Today</div>
+    <div class="field-row" style="margin-bottom:14px">
+      <div class="field" style="margin-bottom:0"><label>Date</label><input type="date" id="daily-date"/></div>
+      <div class="field" style="margin-bottom:0"><label>Revenue ($)</label><input type="number" id="daily-amount" placeholder="0.00" min="0" step="0.01"/></div>
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Court / location</label>
+      <div class="route-grid" id="daily-routes"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>Notes (optional)</label><input type="text" id="daily-note" placeholder="e.g. 2 private lessons"/></div>
+    <button class="btn" style="background:#f97316;color:white;font-size:15px;font-weight:600" onclick="saveDailySummary()">Save income + mileage</button>
+  </div>
+</div>
+
+<div class="modal" id="delete-modal">
+  <div style="background:var(--surface);border-radius:var(--radius);padding:24px;max-width:300px;width:100%;text-align:center">
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Delete entry?</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:24px;line-height:1.6" id="delete-modal-desc">This cannot be undone.</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="margin-top:0;flex:1" onclick="closeDeleteModal()">Cancel</button>
+      <button style="flex:1;padding:14px;border-radius:var(--radius-sm);border:none;background:#f87171;color:white;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer" onclick="confirmDeleteNow()">Delete</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="receipt-modal" onclick="closeModal()">
   <img id="modal-img" src="" alt="Receipt"/>
   <div class="modal-info">
@@ -678,6 +731,8 @@ function showSection(name, btn) {
   document.getElementById('sec-'+name).classList.add('active'); btn.classList.add('active');
   if(name==='ledger') renderLedger();
   if(name==='summary') renderSummary();
+  const fab = document.getElementById('fab-daily');
+  
 }
 
 function compressImage(dataUrl, callback) {
@@ -725,7 +780,27 @@ function addMileage() {
   document.getElementById('mil-miles').value=''; document.getElementById('mil-note').value='';
   showToast('Mileage logged','success');
 }
-function deleteEntry(id) { entries=entries.filter(e=>e.id!==id); saveData();refresh();renderLedger(); showToast('Deleted'); }
+let pendingDeleteId = null;
+function confirmDelete(id) {
+  const e = entries.find(x=>x.id===id);
+  if (!e) return;
+  pendingDeleteId = id;
+  const amt = e.type==='mileage' ? e.miles.toFixed(1)+' mi' : '$'+e.amount.toFixed(2);
+  document.getElementById('delete-modal-desc').textContent = e.category + ' · ' + amt + ' · ' + fmtDate(e.date);
+  document.getElementById('delete-modal').classList.add('open');
+}
+function confirmDeleteNow() {
+  if (!pendingDeleteId) return;
+  entries = entries.filter(e=>e.id!==pendingDeleteId);
+  saveData(); refresh(); renderLedger();
+  closeDeleteModal();
+  showToast('Entry deleted');
+}
+function closeDeleteModal() {
+  pendingDeleteId = null;
+  document.getElementById('delete-modal').classList.remove('open');
+}
+function deleteEntry(id) { confirmDelete(id); }
 
 function refresh() {
   const rev=entries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
@@ -1574,7 +1649,63 @@ For mileage: if a known route is mentioned, use its exact name as the note. Inco
   btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg> Voice log`;
 }
 
-loadData(); loadRoutes(); loadTheme(); initDates(); refresh(); loadFromCloud(); renderRoutes();
+
+
+// DAILY SUMMARY MODAL
+let selectedRoute = null;
+
+function openDailyModal() {
+  selectedRoute = null;
+  document.getElementById('daily-date').value = today();
+  document.getElementById('daily-amount').value = '';
+  document.getElementById('daily-note').value = '';
+  document.getElementById('daily-date-label').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+  const grid = document.getElementById('daily-routes');
+  grid.innerHTML = savedRoutes.map(r => `
+    <div class="route-chip" onclick="selectDailyRoute('${r.name}',${r.miles},this)">
+      <div>${r.name}</div>
+      <div class="route-chip-miles">${r.miles} mi</div>
+    </div>`).join('') + `<div class="route-chip" onclick="selectDailyRoute(null,0,this)"><div>No drive</div><div class="route-chip-miles">skip</div></div>`;
+
+  document.getElementById('daily-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('daily-amount').focus(), 300);
+}
+
+function selectDailyRoute(name, miles, el) {
+  document.querySelectorAll('.route-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRoute = name ? { name, miles } : null;
+}
+
+function closeDailyModal() {
+  document.getElementById('daily-modal').classList.remove('open');
+  selectedRoute = null;
+}
+
+function saveDailySummary() {
+  const amount = parseFloat(document.getElementById('daily-amount').value);
+  const date = document.getElementById('daily-date').value;
+  const note = document.getElementById('daily-note').value;
+  if (!amount || amount <= 0) { showToast('Enter today's revenue'); return; }
+
+  let added = 0;
+  // Log income
+  entries.push({ id: Date.now(), type:'income', date, amount, category:'Private lesson', note: note || (selectedRoute ? selectedRoute.name : '') });
+  added++;
+
+  // Log mileage if route selected
+  if (selectedRoute) {
+    entries.push({ id: Date.now()+1, type:'mileage', date, miles: selectedRoute.miles, category:'Drive to lesson', note: selectedRoute.name });
+    added++;
+  }
+
+  saveData(); refresh();
+  closeDailyModal();
+  showToast('Day logged!', 'success');
+}
+
+loadData(); loadRoutes(); loadTheme(); initDates(); refresh(); loadFromCloud(); renderRoutes(); 
 </script>
 </body>
 </html>
