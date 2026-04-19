@@ -992,14 +992,17 @@ function processFile(file){
 }
 async function scanWithAI(dataUrl){
   const base64=dataUrl.split(',')[1];
-  const prompt=`You are a bookkeeper for a self-employed professional. Analyze this receipt. Respond ONLY with valid JSON, no markdown:\n{"date":"YYYY-MM-DD or null","amount":number or null,"vendor":"store name","description":"brief description","expense_type":"business or vehicle","suggested_category":"if business: Court fees|Equipment / balls|Racket / strings|Coaching certification|Software / apps|Phone / communication|Marketing|Insurance|Professional development|Meals (business)|Other expense. If vehicle: Gas|Oil change|Car insurance|Car repair / maintenance|Other vehicle"}`;
+  const prompt=`You are a bookkeeper for a self-employed professional. Look carefully at this receipt image and extract every detail you can see, even if the image is blurry or partially visible. Always try your best to find the total amount — look for words like "Total", "Amount Due", "Grand Total", "Balance Due", or the largest dollar amount on the receipt. Respond ONLY with valid JSON, no markdown:
+{"date":"YYYY-MM-DD or null if truly not visible","amount":number or null if truly not visible,"vendor":"store or business name, or null","description":"what was purchased","expense_type":"business or vehicle","suggested_category":"if business: Court fees|Equipment / balls|Racket / strings|Coaching certification|Software / apps|Phone / communication|Marketing|Insurance|Professional development|Meals (business)|Other expense. If vehicle: Gas|Oil change|Car insurance|Car repair / maintenance|Other vehicle","confidence":"high or medium or low"}`;
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
     const data=await res.json();
-    const p=JSON.parse(data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    const p=JSON.parse(raw);
     document.getElementById('scan-loading-el').style.display='none';
     const resEl=document.getElementById('scan-result-el');
-    resEl.innerHTML=`<div class="scan-result-box"><div class="scan-result-label">Receipt read</div><div class="scan-result-item"><span>Vendor</span><span>${p.vendor||'Unknown'}</span></div><div class="scan-result-item"><span>Amount</span><span>${p.amount!=null?'$'+parseFloat(p.amount).toFixed(2):'Not found'}</span></div><div class="scan-result-item"><span>Date</span><span>${p.date||'Not found'}</span></div><div class="scan-result-item"><span>Category</span><span>${p.suggested_category}</span></div></div>`;
+    const confidenceColor=p.confidence==='high'?'var(--green)':p.confidence==='medium'?'#fbbf24':'var(--text3)';
+    resEl.innerHTML=`<div class="scan-result-box"><div class="scan-result-label" style="color:${confidenceColor}">Receipt read — ${p.confidence||'medium'} confidence</div><div class="scan-result-item"><span>Vendor</span><span>${p.vendor||'Unknown'}</span></div><div class="scan-result-item"><span>Amount</span><span>${p.amount!=null?'$'+parseFloat(p.amount).toFixed(2):'Not found — enter below'}</span></div><div class="scan-result-item"><span>Date</span><span>${p.date||'Not found — enter below'}</span></div><div class="scan-result-item"><span>Category</span><span>${p.suggested_category}</span></div></div>`;
     resEl.style.display='block';
     const isVehicle=p.expense_type==='vehicle';
     const bizCats=['Court fees','Equipment / balls','Racket / strings','Coaching certification','Software / apps','Phone / communication','Marketing','Insurance','Professional development','Meals (business)','Other expense'];
@@ -1009,17 +1012,22 @@ async function scanWithAI(dataUrl){
     const badge=document.getElementById('r-type-badge');
     badge.innerHTML=isVehicle?`<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:500;color:#fbbf24">Vehicle expense detected</div>`:`<div style="display:inline-flex;align-items:center;gap:6px;background:var(--red-bg);border:1px solid rgba(248,113,113,0.2);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:500;color:var(--red)">Business expense detected</div>`;
     badge.style.display='block';
-    if(p.date)document.getElementById('r-date').value=p.date; else document.getElementById('r-date').value=today();
-    if(p.amount!=null)document.getElementById('r-amount').value=parseFloat(p.amount).toFixed(2);
-    document.getElementById('r-note').value=[p.vendor,p.description].filter(Boolean).join(' — ');
+    if(p.date) document.getElementById('r-date').value=p.date;
+    else document.getElementById('r-date').value=today();
+    if(p.amount!=null) document.getElementById('r-amount').value=parseFloat(p.amount).toFixed(2);
+    if(p.vendor||p.description) document.getElementById('r-note').value=[p.vendor,p.description].filter(Boolean).join(' — ');
     document.getElementById('scan-form-el').style.display='block';
     window._scanIsVehicle=isVehicle;
+    if(p.confidence==='low') showToast('Low confidence — please verify the amount');
   } catch(err){
     document.getElementById('scan-loading-el').style.display='none';
-    document.getElementById('scan-result-el').innerHTML=`<div style="color:var(--red);font-size:13px;padding:10px;background:var(--red-bg);border-radius:8px;margin-bottom:14px">Could not read receipt — fill in below.</div>`;
-    document.getElementById('scan-result-el').style.display='block';
+    // Even on error, show the form pre-filled with today's date so they can enter manually
+    const resEl=document.getElementById('scan-result-el');
+    resEl.innerHTML=`<div style="color:#fbbf24;font-size:13px;padding:10px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:8px;margin-bottom:14px">Could not read receipt automatically — please enter the amount below and verify the details.</div>`;
+    resEl.style.display='block';
     document.getElementById('r-date').value=today();
     document.getElementById('scan-form-el').style.display='block';
+    window._scanIsVehicle=false;
   }
 }
 function confirmScan(){
